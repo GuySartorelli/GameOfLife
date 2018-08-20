@@ -23,8 +23,9 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 /**
- *  CONWAYS GAME OF LIFE
- *	@author dirglehurbleherb
+ * CONWAYS GAME OF LIFE
+ * 
+ * @author dirglehurbleherb
  */
 
 public class GameOfLifeUI extends Application {
@@ -33,32 +34,27 @@ public class GameOfLifeUI extends Application {
 	private Group displayBuffer = new Group();
 	private VBox buttonsBox = new VBox(5);
 	private Scene scene = new Scene(displayBuffer, width, height);
-	private Timeline timeline = new Timeline(); 
+	private Timeline timeline = new Timeline();
 	private Button playButton = new Button("\u25B6");
 	private Button pauseButton = new Button("\u23F8");
-	private Button stopButton = new Button(	"\u23F9");
+	private Button stopButton = new Button("\u23F9");
 
-	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		// TODO Auto-generated method stu
-	
+
 		KeyFrame frame = new KeyFrame(Duration.millis(16), new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
-							
-										
-					
-				
+
 			}
 		});
-		
-		//TimelineBuilder.create().cycleCount(javafx.animation.Animation.INDEFINITE).keyFrames(frame).build().play();
+
+		// TimelineBuilder.create().cycleCount(javafx.animation.Animation.INDEFINITE).keyFrames(frame).build().play();
 		// TimelineBuilder is deprecated, Used Timeline below instead.
-		timeline.setCycleCount(Timeline.INDEFINITE); 
-		timeline.getKeyFrames().addAll(frame); 
+		timeline.setCycleCount(Timeline.INDEFINITE);
+		timeline.getKeyFrames().addAll(frame);
 		timeline.setAutoReverse(true);
-//		timeline.play();
+		// timeline.play();
 
 		buttonsBox.getChildren().add(playButton);
 		buttonsBox.getChildren().add(pauseButton);
@@ -67,21 +63,24 @@ public class GameOfLifeUI extends Application {
 		buttonsBox.setPadding(new Insets(10, 10, 10, 10));
 		buttonsBox.setBackground(Background.EMPTY);
 		displayBuffer.getChildren().add(buttonsBox);
-		
-		playButton.setStyle("-fx-font: 15 arial; -fx-base: #353535;-fx-text-fill: white; -fx-pref-width: 28px; -fx-pref-height: 28px;");
-		pauseButton.setStyle("-fx-font: 12 arial; -fx-base: #353535;-fx-text-fill: white; -fx-pref-width: 28px; -fx-pref-height: 28px;");
-		stopButton.setStyle("-fx-font: 10 arial; -fx-base: #353535;-fx-text-fill: white; -fx-pref-width: 28px; -fx-pref-height: 28px;");
-		
+
+		playButton.setStyle(
+				"-fx-font: 15 arial; -fx-base: #353535;-fx-text-fill: white; -fx-pref-width: 28px; -fx-pref-height: 28px;");
+		pauseButton.setStyle(
+				"-fx-font: 12 arial; -fx-base: #353535;-fx-text-fill: white; -fx-pref-width: 28px; -fx-pref-height: 28px;");
+		stopButton.setStyle(
+				"-fx-font: 10 arial; -fx-base: #353535;-fx-text-fill: white; -fx-pref-width: 28px; -fx-pref-height: 28px;");
+
 		playButton.setOnAction(this::doPlay);
 		pauseButton.setOnAction(this::doPause);
-		stopButton.setOnAction(this::doStop);	
-		
+		stopButton.setOnAction(this::doStop);
+
 		primaryStage.setTitle("Conway's Game of Life");
 		primaryStage.setScene(scene);
 		primaryStage.show();
-		
-	}			
-	
+
+	}
+
 	public void doPlay(ActionEvent act) {
 		timeline.play();
 	}
@@ -89,7 +88,7 @@ public class GameOfLifeUI extends Application {
 	public void doPause(ActionEvent act) {
 		timeline.pause();
 	}
-	
+
 	public void doStop(ActionEvent act) {
 		timeline.stop();
 		System.exit(0);
