@@ -35,6 +35,7 @@ public class GameOfLifeUI extends Application {
 
 	private Group displayBuffer = new Group();
 	private Game game = new Game(20);
+	private GridBackground grid = new GridBackground(20);
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -65,6 +66,7 @@ public class GameOfLifeUI extends Application {
 		//LAYOUT
 		//____________________
 		mainGrp.getChildren().add(displayBuffer);
+		mainGrp.getChildren().add(grid);
 		buttonsBox.getChildren().add(playButton);
 		buttonsBox.getChildren().add(pauseButton);
 		buttonsBox.getChildren().add(stopButton);
@@ -91,26 +93,33 @@ public class GameOfLifeUI extends Application {
 		primaryStage.setTitle("Conway's Game of Life");
 		primaryStage.setScene(scene);
 		primaryStage.show();
-
+		grid.construct(); //must be after stage is shown
 	}
 	
 	public void doMouseScroll(ScrollEvent event) {
-		displayBuffer.setTranslateX(displayBuffer.getTranslateX() + event.getDeltaX());
-		displayBuffer.setTranslateY(displayBuffer.getTranslateY() + event.getDeltaY());
+		double dx = event.getDeltaX();
+		double dy = event.getDeltaY();
+		displayBuffer.setTranslateX(displayBuffer.getTranslateX() + dx);
+		displayBuffer.setTranslateY(displayBuffer.getTranslateY() + dy);
+		grid.scroll(dx, dy);
 	}
 	
 	public void doKeyPress(KeyEvent event) {
 		if (event.getCode() == KeyCode.DOWN) {
 			displayBuffer.setTranslateY(displayBuffer.getTranslateY() - 20);
+			grid.scroll(0, -20);
 		}
 		if (event.getCode() == KeyCode.UP) {
 			displayBuffer.setTranslateY(displayBuffer.getTranslateY() + 20);
+			grid.scroll(0, 20);
 		}
 		if (event.getCode() == KeyCode.LEFT) {
 			displayBuffer.setTranslateX(displayBuffer.getTranslateX() + 20);
+			grid.scroll(20, 0);
 		}
 		if (event.getCode() == KeyCode.RIGHT) {
 			displayBuffer.setTranslateX(displayBuffer.getTranslateX() - 20);
+			grid.scroll(-20, 0);
 		}
 	}
 
@@ -152,6 +161,7 @@ public class GameOfLifeUI extends Application {
 				double distanceY = prevY - y;
 				displayBuffer.setTranslateX(displayBuffer.getTranslateX() + distanceX);
 				displayBuffer.setTranslateY(displayBuffer.getTranslateY() + distanceY);
+				grid.scroll(distanceX, distanceY);
 				prevX = x;
 				prevY = y;
 			}
