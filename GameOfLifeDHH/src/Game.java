@@ -42,7 +42,23 @@ public class Game {
 	
 	/** Get Number of neighbours Method */
 	public int getNumNeighbours() {
-		return 0; // to be changed
+		// find a live cell in the currentBuffer
+		// then find how many live neighbour cells we have 
+		int totalNeighbours = 0;
+		for(long[] n : currentBuffer.keySet()) {
+			
+			Cell c = currentBuffer.get(n);
+			double x = c.getX();
+			double y = c.getY();
+			
+			if(x + cellSize > 0) {
+				totalNeighbours++;
+			}
+			
+		}
+		
+		return totalNeighbours; // to be changed
+		
 	}	
 	
 	/** Checks all cells, by getting neighbours and num of neighbours
@@ -93,10 +109,10 @@ public class Game {
 			key[0] -= cellSize;
 		}
 		
-		//Testing:
-		for (long[] testCell: deadNeighbours) {
-			System.out.println(testCell[0]+","+testCell[1]);
-		}
+//		//Testing:
+//		for (long[] testCell: deadNeighbours) {
+//			System.out.println(testCell[0]+","+testCell[1]);
+//		}
 		
 		return deadNeighbours;
 	}
