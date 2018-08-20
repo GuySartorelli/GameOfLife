@@ -41,7 +41,7 @@ public class GameOfLifeUI extends Application {
 		
 		//TIMELINE
 		//________________
-		KeyFrame frame = new KeyFrame(Duration.millis(16), new EventHandler<ActionEvent>() {
+		KeyFrame frame = new KeyFrame(Duration.millis(60), new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
 				game.update();
