@@ -56,8 +56,8 @@ public class Game {
 
 		//Search currentBuffer map using cell position as key.
 		List<long[]> deadNeighbours = new ArrayList<long[]>();
-		long cellX = (long)cell.getX();
-		long cellY = (long)cell.getY();
+		long cellX = (long)cell.getTranslateX();
+		long cellY = (long)cell.getTranslateY();
 		long[] key = {cellX,cellY};
 		
 		//Check the neighbour to the left.
