@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +18,10 @@ public class Game {
 		this.cellSize = cellSize;
 		parsePatterns();
 		defineInitialPattern();
+		
+		//Test getDeadNeighbours method.
+		Cell testCell = new Cell(cellSize,100,100);
+		getDeadNeighbours(testCell);
 	}
 
 	/** Getter for currentBuffer */
@@ -47,8 +52,53 @@ public class Game {
 	}
 
 	/** Returns a list of dead neighbours in arrays */
-	public List<long[]> getDeadNeighbours(){
-		return null;
+	public List<long[]> getDeadNeighbours(Cell cell){
+
+		//Search currentBuffer map using cell position as key.
+		List<long[]> deadNeighbours = new ArrayList<long[]>();
+		long cellX = (long)cell.getX();
+		long cellY = (long)cell.getY();
+		long[] key = {cellX,cellY};
+		
+		//Check the neighbour to the left.
+		key[0] -= cellSize;
+		if (!currentBuffer.containsKey(key)) {
+			long[] position = {key[0],key[1]};
+			deadNeighbours.add(position);
+		}
+		//Check the 3 neighbours above from left to right.
+		key[1] -= cellSize;
+		for (int i = 0; i < 3; i++) {
+			if (!currentBuffer.containsKey(key)) {
+				long[] position = {key[0],key[1]};
+				deadNeighbours.add(position);
+			}
+			if (i != 2) {
+				key[0] += cellSize;
+			}
+		}
+		//Check the neighbour to the right.
+		key[1] += cellSize;
+		if (!currentBuffer.containsKey(key)) {
+			long[] position = {key[0],key[1]};
+			deadNeighbours.add(position);
+		}
+		//Check the 3 neighbours below from right to left.
+		key[1] += cellSize;
+		for (int i = 0; i < 3; i++) {
+			if (!currentBuffer.containsKey(key)) {
+				long[] position = {key[0],key[1]};
+				deadNeighbours.add(position);
+			}
+			key[0] -= cellSize;
+		}
+		
+		//Testing:
+		for (long[] testCell: deadNeighbours) {
+			System.out.println(testCell[0]+","+testCell[1]);
+		}
+		
+		return deadNeighbours;
 	}
 	
 	/** creates cell */
