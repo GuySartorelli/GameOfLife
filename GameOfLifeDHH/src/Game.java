@@ -109,10 +109,10 @@ public class Game {
 			key[0] -= cellSize;
 		}
 		
-//		//Testing:
-//		for (long[] testCell: deadNeighbours) {
-//			System.out.println(testCell[0]+","+testCell[1]);
-//		}
+		//Testing:
+		for (long[] testCell: deadNeighbours) {
+			System.out.println(testCell[0]+","+testCell[1]);
+		}
 		
 		return deadNeighbours;
 	}
