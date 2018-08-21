@@ -76,8 +76,7 @@ public class Game {
 	 * This int value is the number of neighbours surrounding the given Cell.
 	 */
 	public int getNumNeighbours(long x,long y) {
-		/** find a live cell in the currentBuffer
-		then find how many live neighbour cells we have.*/
+		
 		int totalNeighbours = 0;
 
 		/**create list to store cell's neighbouring positions.*/
