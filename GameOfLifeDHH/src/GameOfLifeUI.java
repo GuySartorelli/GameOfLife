@@ -38,6 +38,8 @@ public class GameOfLifeUI extends Application {
 	private Button playButton = new Button("\u25B6");
 	private Button pauseButton = new Button("\u23F8");
 	private Button stopButton = new Button("\u23F9");
+	private Button backGround = new Button("b/w");//toggles the background between black and white
+	
 
 	private Group displayBuffer = new Group();
 	private Game game = new Game(20);
@@ -82,6 +84,7 @@ public class GameOfLifeUI extends Application {
 		buttonsBox.getChildren().add(playButton);
 		buttonsBox.getChildren().add(pauseButton);
 		buttonsBox.getChildren().add(stopButton);
+		buttonsBox.getChildren().add(backGround);
 
 		buttonsBox.setPadding(new Insets(10, 10, 10, 10));
 		buttonsBox.setBackground(Background.EMPTY);
@@ -93,7 +96,9 @@ public class GameOfLifeUI extends Application {
 				"-fx-font: 12 arial; -fx-base: #353535;-fx-text-fill: white; -fx-pref-width: 28px; -fx-pref-height: 28px;");
 		stopButton.setStyle(
 				"-fx-font: 10 arial; -fx-base: #353535;-fx-text-fill: white; -fx-pref-width: 28px; -fx-pref-height: 28px;");
-
+		backGround.setStyle(
+				"-fx-font: 9 arial; -fx-base: #353535;-fx-text-fill: white; -fx-pref-width: 28px; -fx-pref-height: 28px;");
+		
 		playButton.setOnAction(this::doPlay);
 		pauseButton.setOnAction(this::doPause);
 		stopButton.setOnAction(this::doStop);

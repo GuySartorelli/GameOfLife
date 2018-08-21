@@ -28,6 +28,7 @@ public class Cell extends Rectangle {
 		setStrokeWidth(cellSize*0.05);
 		colourRuleLifespan();
 		//colourRuleNumNeighbours();
+		//colourRuleRandom();
 	}
 
 	public void colourRuleLifespan() {
@@ -67,16 +68,16 @@ public class Cell extends Rectangle {
 			this.setFill(Color.RED);//NEVER GETS HERE SO POSSIBLY REDUNDANT? NO RED DESPITE VIGOROUS TESTING!!
 		}
 	}
-	
+
 	/**
 	 * Setting the colour based on a selection made with the ColorPicker in the GUI.
 	 * @param colorPicker
 	 * 
 	 */
-		public void colourRuleSolid(ColorPicker colorPicker) {
-					this.setFill(colorPicker.getValue());
-		}
-		
+	public void colourRuleSolid(ColorPicker colorPicker) {
+		this.setFill(colorPicker.getValue());
+	}
+
 	public void colourRuleNumNeighbours() {
 		int neighbours = this.game.getNumNeighbours(this.getTranslateX(),this.getTranslateY());
 		//System.out.println(getTranslateX() + " " + getTranslateY() + " "  + lifespan + " " + neighbours);
@@ -90,9 +91,20 @@ public class Cell extends Rectangle {
 		}
 	}
 
+	public void colourRuleRandom(){
+
+		double red = Math.random();
+		double green = Math.random();
+		double blue = Math.random();
+		
+		if((red != 0.0 && green !=0.0 && blue != 0.0)||((red != 1.0 && green !=1.0 && blue != 1.0))){
+			this.setFill(Color.color(red, green, blue));
+		}
+	}
 	public void update() {
 		lifespan++;
 		colourRuleLifespan();
 		//colourRuleNumNeighbours();
+		//colourRuleRandom();
 	}
 }
