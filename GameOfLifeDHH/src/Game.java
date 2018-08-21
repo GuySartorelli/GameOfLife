@@ -76,37 +76,38 @@ public class Game {
 	 * This int value is the number of neighbours surrounding the given Cell.
 	 */
 	public int getNumNeighbours(long x,long y) {
-		// find a live cell in the currentBuffer
-		// then find how many live neighbour cells we have 
+		/** find a live cell in the currentBuffer
+		then find how many live neighbour cells we have.*/
 		int totalNeighbours = 0;
 
-		//create list to store cell's neighbouring positions.
+		/**create list to store cell's neighbouring positions.*/
 		List<Position> neighbourPos = new ArrayList<Position>();
 		
-		//construct 8 positions to check around cell in long [] format
+		/**construct 8 positions to check around cell in long [] format
+		Top row.*/
 		Position leftTopPos = new Position (x-cellSize, y-cellSize);
 		Position topPos = new Position (x, y-cellSize);
 		Position rightTopPos = new Position (x+cellSize, y-cellSize);
-		
+		/**Middle row.*/
 		Position leftPos = new Position (x-cellSize, y);
 		Position rightPos = new Position (x+cellSize, y);
-		
+		/**Bottom row.*/
 		Position leftBottomPos = new Position (x-cellSize, y+cellSize);
 		Position bottomPos = new Position (x, y+cellSize);
 		Position rightBottomPos = new Position (x+cellSize, y+cellSize);
 		
-		//adding all 8 positions into the ArrayList neighbourPos.
+		/**adding all 8 positions into the ArrayList neighbourPos.*/
 		neighbourPos.addAll(Arrays.asList(leftTopPos,leftPos,leftBottomPos,
 				topPos,bottomPos,rightTopPos, rightPos,rightBottomPos));
 
-		//ask currentBuffer what is in that position in currentBuffer
+		/**ask currentBuffer what is in that position in currentBuffer*/
 		for(Position pos : neighbourPos) {						
 			if(currentBuffer.containsKey(pos)) {
 				totalNeighbours++;
 			}
 		}
 
-		return totalNeighbours; // to be changed
+		return totalNeighbours;
 	}	
 	
 	/** Checks all cells, by getting neighbours and num of neighbours
