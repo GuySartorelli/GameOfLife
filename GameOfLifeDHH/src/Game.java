@@ -64,8 +64,17 @@ public class Game {
 		currentBuffer.putAll(backBuffer);
 		backBuffer.clear();
 	}
-	
-	/** Get Number of neighbours Method */
+
+	/**
+	 * getNumNeightbours gets Number of neighbours surrounding a cell 
+	 * and returns this number. 
+	 * @param x
+	 * Cell x position is passed in.
+	 * @param y
+	 * Cell y position is passed in
+	 * @return
+	 * This int value is the number of neighbours surrounding the given Cell.
+	 */
 	public int getNumNeighbours(long x,long y) {
 		// find a live cell in the currentBuffer
 		// then find how many live neighbour cells we have 
@@ -132,6 +141,16 @@ public class Game {
 	}
 
 	/** Returns a list of dead neighbours in arrays */
+	
+	/**
+	 * 
+	 * @param x
+	 * 
+	 * @param y
+	 * 
+	 * @return
+	 * 
+	 */
 	public List<Position> getDeadNeighbours(long x, long y){
 
 		//Search currentBuffer map using cell position as key.		
