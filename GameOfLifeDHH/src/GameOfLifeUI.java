@@ -1,19 +1,29 @@
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -30,10 +40,10 @@ import javafx.util.Duration;
 
 public class GameOfLifeUI extends Application {
 	private int width = 500, height = 500;
-
-	private Group mainGrp = new Group();
-	private VBox buttonsBox = new VBox(5);
-	private Scene scene = new Scene(mainGrp, width, height);
+	private int padding = 5;
+	
+	private BorderPane layout = new BorderPane();
+	private Scene scene = new Scene(layout, width, height);
 	private Timeline timeline = new Timeline();
 	private Button playButton = new Button("\u25B6");
 	private Button pauseButton = new Button("\u23F8");
@@ -41,9 +51,13 @@ public class GameOfLifeUI extends Application {
 	private Button backGround = new Button("b/w");//toggles the background between black and white
 	
 
+	private int cellSize = 20;
 	private Group displayBuffer = new Group();
-	private Game game = new Game(20);
-	private GridBackground grid = new GridBackground(20);
+	private Game game = new Game(cellSize);
+	private GridBackground grid = new GridBackground(cellSize);
+	private Group scaleOffset = new Group(displayBuffer, grid);
+	
+	private Slider zoomSlider;
 	private ColorPicker colorPicker = new ColorPicker();
 
 	@Override
@@ -62,7 +76,7 @@ public class GameOfLifeUI extends Application {
 
 		timeline.setCycleCount(Timeline.INDEFINITE);
 		timeline.getKeyFrames().add(frame);
-		timeline.setAutoReverse(true);//what does this do?
+		//timeline.setAutoReverse(true);//what does this do?
 		
 		//SCROLLING
 		//____________________
@@ -79,16 +93,7 @@ public class GameOfLifeUI extends Application {
 		
 		//LAYOUT
 		//____________________
-		mainGrp.getChildren().add(displayBuffer);
-		mainGrp.getChildren().add(grid);
-		buttonsBox.getChildren().add(playButton);
-		buttonsBox.getChildren().add(pauseButton);
-		buttonsBox.getChildren().add(stopButton);
-		buttonsBox.getChildren().add(backGround);
-
-		buttonsBox.setPadding(new Insets(10, 10, 10, 10));
-		buttonsBox.setBackground(Background.EMPTY);
-		mainGrp.getChildren().add(buttonsBox);
+		layout.getChildren().add(scaleOffset);
 
 		playButton.setStyle(
 				"-fx-font: 15 arial; -fx-base: #353535;-fx-text-fill: white; -fx-pref-width: 28px; -fx-pref-height: 28px;");
@@ -103,9 +108,42 @@ public class GameOfLifeUI extends Application {
 		pauseButton.setOnAction(this::doPause);
 		stopButton.setOnAction(this::doStop);
 		
+		//BOTTOM LAYOUT
+		//_____________
+		HBox optionsBox = new HBox();
+		optionsBox.setAlignment(Pos.CENTER);
+		optionsBox.setSpacing(padding);
+		optionsBox.setPadding(new Insets(padding, padding, padding, padding));
+		optionsBox.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
+		ComboBox<String> patternBox = new ComboBox<String>(FXCollections.observableArrayList(game.getPatternNames()));
+		patternBox.getSelectionModel().select("cell");
+		ComboBox<String> colorBox = new ComboBox<String>(FXCollections.observableArrayList(Cell.getColorRules()));
+//		colorBox.getSelectionModel().select(THE_DEFAULT);
+		GridPane sliderPane = new GridPane();
+		zoomSlider = new Slider();
+		zoomSlider.setMin(0.5);
+		zoomSlider.setMax(3);
+		zoomSlider.setMajorTickUnit(0.5);
+		zoomSlider.setMinorTickCount(0);
+		zoomSlider.setBlockIncrement(0.5);
+//		zoomSlider.setSnapToTicks(true);
+		zoomSlider.setShowTickLabels(true);
+//		zoomSlider.setShowTickMarks(true);
+		zoomSlider.setValue(1);
+		zoomSlider.valueProperty().addListener(this::doZoom);
+		Label zoomLabel = new Label("zoom");
+		Slider speedSlider = new Slider();
+		Label speedLabel = new Label("speed");
+		sliderPane.addColumn(0, zoomSlider, zoomLabel);
+		sliderPane.addColumn(1, speedSlider, speedLabel);
+		GridPane.setHalignment(zoomLabel, HPos.CENTER);
+		GridPane.setHalignment(speedLabel, HPos.CENTER);
+		optionsBox.getChildren().addAll(patternBox, colorBox, sliderPane, playButton, pauseButton, stopButton);
+		layout.setBottom(optionsBox);
+		
+		
 		displayBuffer.getChildren().addAll(game.getCurrentBuffer());
-		displayBuffer.setTranslateX(width*0.5);
-		displayBuffer.setTranslateY(height*0.5);
+		scrollGame(width*0.5, height*0.5);
 
 		primaryStage.widthProperty().addListener((obs, oldVal, newVal) -> grid.construct());
 		primaryStage.heightProperty().addListener((obs, oldVal, newVal) -> grid.construct());
@@ -115,30 +153,39 @@ public class GameOfLifeUI extends Application {
 		grid.construct(); //must be after stage is shown
 	}
 	
-	public void doMouseScroll(ScrollEvent event) {
-		double dx = event.getDeltaX();
-		double dy = event.getDeltaY();
+	public void doZoom(ObservableValue<? extends Number> ov, Number oldVal, Number newVal) {
+		double scaleVal = Math.round(newVal.doubleValue() * 2.0) * 0.5;
+		scaleVal = newVal.doubleValue();
+		scaleOffset.setScaleX(scaleVal);
+		scaleOffset.setScaleY(scaleVal);
+		grid.scale(scaleVal);
+		//zoomSlider.setValue(scaleVal);
+	}
+	
+	public void scrollGame(double dx, double dy) {
 		displayBuffer.setTranslateX(displayBuffer.getTranslateX() + dx);
 		displayBuffer.setTranslateY(displayBuffer.getTranslateY() + dy);
 		grid.scroll(dx, dy);
 	}
 	
+	public void doMouseScroll(ScrollEvent event) {
+		double dx = event.getDeltaX();
+		double dy = event.getDeltaY();
+		scrollGame(dx, dy);
+	}
+	
 	public void doKeyPress(KeyEvent event) {
 		if (event.getCode() == KeyCode.DOWN) {
-			displayBuffer.setTranslateY(displayBuffer.getTranslateY() - 20);
-			grid.scroll(0, -20);
+			scrollGame(0, -20);
 		}
 		if (event.getCode() == KeyCode.UP) {
-			displayBuffer.setTranslateY(displayBuffer.getTranslateY() + 20);
-			grid.scroll(0, 20);
+			scrollGame(0, 20);
 		}
 		if (event.getCode() == KeyCode.LEFT) {
-			displayBuffer.setTranslateX(displayBuffer.getTranslateX() + 20);
-			grid.scroll(20, 0);
+			scrollGame(20, 0);
 		}
 		if (event.getCode() == KeyCode.RIGHT) {
-			displayBuffer.setTranslateX(displayBuffer.getTranslateX() - 20);
-			grid.scroll(-20, 0);
+			scrollGame(-20, 0);
 		}
 	}
 
@@ -147,7 +194,7 @@ public class GameOfLifeUI extends Application {
 	}
 
 	public void doPause(ActionEvent act) {
-			timeline.pause();
+		timeline.pause();
 	}
 
 	public void doStop(ActionEvent act) {
@@ -175,11 +222,9 @@ public class GameOfLifeUI extends Application {
 				prevX = x;
 				prevY = y;
 			} else if (event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
-				double distanceX = prevX - x;
-				double distanceY = prevY - y;
-				displayBuffer.setTranslateX(displayBuffer.getTranslateX() + distanceX);
-				displayBuffer.setTranslateY(displayBuffer.getTranslateY() + distanceY);
-				grid.scroll(distanceX, distanceY);
+				double dx = prevX - x;
+				double dy = prevY - y;
+				scrollGame(dx, dy);
 				prevX = x;
 				prevY = y;
 			}

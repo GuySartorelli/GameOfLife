@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Class to for creating Game object.
@@ -27,7 +28,7 @@ public class Game {
 		this.cellSize = cellSize;
 		parsePatterns();
 		defineInitialPattern();
-
+		
 		//Test getDeadNeighbours method.
 		getDeadNeighbours(100,100);
 	}
@@ -115,11 +116,11 @@ public class Game {
 
 		return totalNeighbours;
 	}	
-
+	
 	/** Checks all cells, by getting neighbours and num of neighbours
 	 * recursion magic happens here */
 	public void checkCells() {
-
+		
 		//Iterate through the currentBuffer map to check each alive cell.
 		//Once checked, the position of the dead neighbour is added to the checkedDead list.
 		List<Position> checkedDead = new ArrayList<Position>();
@@ -137,7 +138,7 @@ public class Game {
 				checkedDead.add(deadCellPos);
 				deadCellPositions += +deadCellPos.getX()+","+deadCellPos.getY()+"  ";
 			}
-
+			
 			//Check self to see if it should remain alive or die.
 			if (getNumNeighbours(cellPos.getX(),cellPos.getY()) == 2 || getNumNeighbours(cellPos.getX(),cellPos.getY()) == 3) {
 				//Cell remains alive. Added to back buffer within createCell method.
@@ -149,9 +150,7 @@ public class Game {
 
 	}
 
-	/** Returns a list of dead neighbours in arrays */
-
-	/**
+	/** Returns a list of dead neighbours in arrays
 	 * 
 	 * @param x
 	 * 
@@ -203,29 +202,23 @@ public class Game {
 			}
 			key.setX(key.getX()-cellSize);
 		}
-
-		//		//Testing:
-		String returnedDeadNeighbours = "returned";
-		for (Position testCell: checkedDeadNeighbours) {
-			returnedDeadNeighbours += testCell.getX()+","+testCell.getY()+"  ";
-		}
-		//		System.out.println(returnedDeadNeighbours);
+		
 
 		return checkedDeadNeighbours;
 	}
-
+	
 	/** creates cell */
 	public void createCell(double x, double y) {
 		Cell cell = new Cell(this, cellSize, x, y);
 		backBuffer.put(new Position(x,y), cell);
 	}
-
+	
 	/** places cells randomly
 	 * possibly replaced later with specific patterns */
 	public void placeRandom() {
-
+		
 	}
-
+	
 	/** places cells with defined initial patterns */
 	public void defineInitialPattern() {
 		//NOTE: Decide whether it should be random or not
@@ -234,13 +227,10 @@ public class Game {
 		for (int[] position : pattern) {
 			double x = position[0]*cellSize;
 			double y = position[1]*cellSize;
-			//			Cell cell = new Cell(cellSize,x, y);
-			//			Position cellPos = new Position(x,y);
-			//			currentBuffer.put(cellPos, cell);
 			createCell(x, y);
 		}
 	}
-
+	
 	/** Takes pattern templates from file and parse them to map
 	 *  */
 	private void parsePatterns() {
@@ -248,7 +238,11 @@ public class Game {
 			PatternParser parser = new PatternParser(getClass().getResourceAsStream("/patterns.gol"));
 			patterns = parser.getContents();
 		} catch(IOException e) {System.out.println(e);}
-
+		
 	}
-
+	
+	public Set<String> getPatternNames(){
+		return patterns.keySet();
+	}
+	
 }

@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 import javafx.scene.control.ColorPicker;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -103,5 +106,19 @@ public class Cell extends Rectangle {
 		colourRuleLifespan();
 		//colourRuleNumNeighbours();
 		//colourRuleRandom();
+	}
+	
+	/**
+	 * THIS NEEDS TO BE CHANGED LATER TO THE ACTUAL RULES
+	 * @return
+	 */
+	public static List<String> getColorRules() {
+		List<String> colorRules = new ArrayList<String>();
+		colorRules.add("Bog");
+		colorRules.add("Beg");
+		colorRules.add("Bug");
+		colorRules.add("Bag");
+		return colorRules;
+		
 	}
 }
