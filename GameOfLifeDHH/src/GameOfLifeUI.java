@@ -2,17 +2,23 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Background;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -32,17 +38,20 @@ public class GameOfLifeUI extends Application {
 	private Button playButton = new Button("\u25B6");
 	private Button pauseButton = new Button("\u23F8");
 	private Button stopButton = new Button("\u23F9");
+	private Button backGround = new Button("b/w");//toggles the background between black and white
+	
 
 	private Group displayBuffer = new Group();
 	private Game game = new Game(20);
 	private GridBackground grid = new GridBackground(20);
+	private ColorPicker colorPicker = new ColorPicker();
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		
 		//TIMELINE
 		//________________
-		KeyFrame frame = new KeyFrame(Duration.millis(16), new EventHandler<ActionEvent>() {
+		KeyFrame frame = new KeyFrame(Duration.millis(100), new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
 				game.update();
@@ -63,6 +72,11 @@ public class GameOfLifeUI extends Application {
 		scene.setOnScroll(this::doMouseScroll);
 		scene.setOnKeyPressed(this::doKeyPress);
 
+		//COLORPICKER
+		//____________________
+	
+		
+		
 		//LAYOUT
 		//____________________
 		mainGrp.getChildren().add(displayBuffer);
@@ -70,6 +84,7 @@ public class GameOfLifeUI extends Application {
 		buttonsBox.getChildren().add(playButton);
 		buttonsBox.getChildren().add(pauseButton);
 		buttonsBox.getChildren().add(stopButton);
+		buttonsBox.getChildren().add(backGround);
 
 		buttonsBox.setPadding(new Insets(10, 10, 10, 10));
 		buttonsBox.setBackground(Background.EMPTY);
@@ -81,7 +96,9 @@ public class GameOfLifeUI extends Application {
 				"-fx-font: 12 arial; -fx-base: #353535;-fx-text-fill: white; -fx-pref-width: 28px; -fx-pref-height: 28px;");
 		stopButton.setStyle(
 				"-fx-font: 10 arial; -fx-base: #353535;-fx-text-fill: white; -fx-pref-width: 28px; -fx-pref-height: 28px;");
-
+		backGround.setStyle(
+				"-fx-font: 9 arial; -fx-base: #353535;-fx-text-fill: white; -fx-pref-width: 28px; -fx-pref-height: 28px;");
+		
 		playButton.setOnAction(this::doPlay);
 		pauseButton.setOnAction(this::doPause);
 		stopButton.setOnAction(this::doStop);
@@ -130,7 +147,7 @@ public class GameOfLifeUI extends Application {
 	}
 
 	public void doPause(ActionEvent act) {
-		timeline.pause();
+			timeline.pause();
 	}
 
 	public void doStop(ActionEvent act) {
@@ -139,7 +156,6 @@ public class GameOfLifeUI extends Application {
 	}
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		launch();
 	}
 
@@ -169,4 +185,24 @@ public class GameOfLifeUI extends Application {
 			}
 		}
 	}
+	
+	/**
+	 * Adding a ColorPicker for the colourRuleSolid(ColorPicker colorPicker) method under cell.
+	 * @author shawbeva
+	 *
+	 */
+//	public class ColorPickerSample extends Application {    
+//	   
+//	    @Override
+//	    public void start(Stage stage) {
+//	      
+//	        colorPicker.setOnAction(new EventHandler() {
+//	            public void handle(Event t) {
+//	                  
+//	            }
+//	        });
+//	 
+//	        //box.getChildren().addAll(colorPicker);
+//	    }
+//	}
 }
