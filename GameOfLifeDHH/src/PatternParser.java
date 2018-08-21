@@ -48,7 +48,8 @@ public class PatternParser {
 	 */
 	public PatternParser(InputStream stream) throws IOException {
 		scan = new Scanner(stream);
-		parse();
+		//parse();
+		parseDiagrams();
 	}
 	
 	/**
@@ -60,7 +61,8 @@ public class PatternParser {
 			throw new FileNotFoundException();
 		}
 		scan = new Scanner(file);
-		parse();
+		//parse();
+		parseDiagrams();
 	}
 	
 	/**
@@ -106,6 +108,41 @@ public class PatternParser {
 				contents.put(key, value);
 				scan.reset(); //reset delimiter to whitespace
 				scan.nextLine();
+			}
+		} catch (InputMismatchException e) {throw new IncorrectFormattingException("");}
+		
+		scan.close();
+	}
+	
+	private void parseDiagrams() throws IncorrectFormattingException{
+		try {
+			while (scan.hasNextLine()) {
+				//Get the name of the diagram to use as the key.
+				String key = scan.nextLine();
+				if (key.startsWith("//")){
+					scan.nextLine();
+					continue; //Allows comments in pattern file.
+				}
+				
+				//Get the cell positions for the pattern template.
+				List<int[]> value = new ArrayList<int[]>();
+				int x = 0;
+				int y = 0;
+				//Get each row of the diagram and determine the position of each cell in that row.
+				String row = scan.nextLine();
+				while (!row.equals(";")) {
+					for (int i = 0; i < row.length(); i++) {
+						if (row.charAt(i) == '*') {
+							int[] pos = {x,y};
+							value.add(pos);
+						}
+						x++;
+					}
+					x = 0;
+					y++;
+					row = scan.nextLine();
+				}				
+				contents.put(key, value);
 			}
 		} catch (InputMismatchException e) {throw new IncorrectFormattingException("");}
 		
