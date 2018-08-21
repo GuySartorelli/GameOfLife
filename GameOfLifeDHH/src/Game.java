@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -84,12 +85,12 @@ public class Game {
 		
 		//Iterate through the currentBuffer map to check each alive cell.
 		//Once checked, the position of the dead neighbour is added to the checkedDead list.
-		List<long[]> checkedDead = new ArrayList<long[]>();
-		for (long[] cellPos: currentBuffer.keySet()) {
+		List<Position> checkedDead = new ArrayList<Position>();
+		for (Position cellPos: currentBuffer.keySet()) {
 			//Get the list of dead neighbours around the cell.
-			List<long[]> deadNeighbours = getDeadNeighbours(cellPos[0],cellPos[1]);
+			List<Position> deadNeighbours = getDeadNeighbours(cellPos.getX(),cellPos.getY());
 			//Iterate through the cell's deadNeighbours list to check whether it should be born.
-			for (long[] deadCellPos: deadNeighbours) {
+			for (Position deadCellPos: deadNeighbours) {
 //				if (!checkedDead.contains(deadCellPos) && getNumNeighbours(deadCellPos[0],deadCellPos[1])==3){
 //					//Cell is born.
 //					createCell(deadCellPos[0],deadCellPos[1]);
@@ -101,12 +102,12 @@ public class Game {
 	}
 
 	/** Returns a list of dead neighbours in arrays */
-	public List<Position> getDeadNeighbours(Cell cell){
+	public List<Position> getDeadNeighbours(long x, long y){
 
 		//Search currentBuffer map using cell position as key.		
 		List<Position> deadNeighbours = new ArrayList<Position>();
-		long cellX = (long)cell.getTranslateX();
-		long cellY = (long)cell.getTranslateY();
+		long cellX = x;
+		long cellY = y;
 		Position key = new Position (cellX,cellY);
 
 		//Check the neighbour to the left.
