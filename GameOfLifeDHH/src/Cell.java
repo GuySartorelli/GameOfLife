@@ -26,11 +26,11 @@ public class Cell extends Rectangle {
 		setStroke(Color.WHITE);
 		setStrokeType(StrokeType.INSIDE);
 		setStrokeWidth(cellSize*0.05);
-		colourRuleLifeSpan();
+		colourRuleLifespan();
 		//colourRuleNumNeighbours();
 	}
 
-	public void colourRuleLifeSpan() {
+	public void colourRuleLifespan() {
 		int neighbours = this.game.getNumNeighbours(this.getTranslateX(),this.getTranslateY());
 		System.out.println(getTranslateX() + " " + getTranslateY() + " "  + lifespan + " " + neighbours);
 
@@ -42,11 +42,10 @@ public class Cell extends Rectangle {
 			double green = currentColour.getGreen();
 			double blue = currentColour.getBlue();
 			red -= 0.2;
-			//blue += 0.2;
 			if(red < 0 ) {
 				red = 0;
 				if(red==0) {
-					blue+=0.2;
+					blue+=0.1;
 				}
 			}
 			if(blue>1.0) {
@@ -68,11 +67,15 @@ public class Cell extends Rectangle {
 			this.setFill(Color.RED);//NEVER GETS HERE SO POSSIBLY REDUNDANT? NO RED DESPITE VIGOROUS TESTING!!
 		}
 	}
-//		public void colourRuleSolid() {
-//			ColorPicker colorPicker1 = new ColorPicker();
-//			Color customColour = JColorChooser.showDialog(null, "First Stripe", Color.white);
-//					this.setColor(customColour);
-//		}
+	
+	/**
+	 * Setting the colour based on a selection made with the ColorPicker in the GUI.
+	 * @param colorPicker
+	 * 
+	 */
+		public void colourRuleSolid(ColorPicker colorPicker) {
+					this.setFill(colorPicker.getValue());
+		}
 		
 	public void colourRuleNumNeighbours() {
 		int neighbours = this.game.getNumNeighbours(this.getTranslateX(),this.getTranslateY());
@@ -89,7 +92,7 @@ public class Cell extends Rectangle {
 
 	public void update() {
 		lifespan++;
-		colourRuleLifeSpan();
+		colourRuleLifespan();
 		//colourRuleNumNeighbours();
 	}
 }

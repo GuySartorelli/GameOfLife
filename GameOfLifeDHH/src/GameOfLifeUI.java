@@ -2,17 +2,23 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Background;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -36,6 +42,7 @@ public class GameOfLifeUI extends Application {
 	private Group displayBuffer = new Group();
 	private Game game = new Game(20);
 	private GridBackground grid = new GridBackground(20);
+	private ColorPicker colorPicker = new ColorPicker();
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -63,6 +70,11 @@ public class GameOfLifeUI extends Application {
 		scene.setOnScroll(this::doMouseScroll);
 		scene.setOnKeyPressed(this::doKeyPress);
 
+		//COLORPICKER
+		//____________________
+	
+		
+		
 		//LAYOUT
 		//____________________
 		mainGrp.getChildren().add(displayBuffer);
@@ -168,4 +180,24 @@ public class GameOfLifeUI extends Application {
 			}
 		}
 	}
+	
+	/**
+	 * Adding a ColorPicker for the colourRuleSolid(ColorPicker colorPicker) method under cell.
+	 * @author shawbeva
+	 *
+	 */
+//	public class ColorPickerSample extends Application {    
+//	   
+//	    @Override
+//	    public void start(Stage stage) {
+//	      
+//	        colorPicker.setOnAction(new EventHandler() {
+//	            public void handle(Event t) {
+//	                  
+//	            }
+//	        });
+//	 
+//	        //box.getChildren().addAll(colorPicker);
+//	    }
+//	}
 }
