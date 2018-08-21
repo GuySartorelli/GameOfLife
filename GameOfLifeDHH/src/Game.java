@@ -20,8 +20,7 @@ public class Game {
 		defineInitialPattern();
 		
 		//Test getDeadNeighbours method.
-		Cell testCell = new Cell(cellSize,100,100);
-		getDeadNeighbours(testCell);
+		getDeadNeighbours(100,100);
 	}
 
 	/** Getter for currentBuffer */
@@ -49,15 +48,31 @@ public class Game {
 	 * recursion magic happens here */
 	public void checkCells() {
 		
+		//Iterate through the currentBuffer map to check each alive cell.
+		//Once checked, the position of the dead neighbour is added to the checkedDead list.
+		List<long[]> checkedDead = new ArrayList<long[]>();
+		for (long[] cellPos: currentBuffer.keySet()) {
+			//Get the list of dead neighbours around the cell.
+			List<long[]> deadNeighbours = getDeadNeighbours(cellPos[0],cellPos[1]);
+			//Iterate through the cell's deadNeighbours list to check whether it should be born.
+			for (long[] deadCellPos: deadNeighbours) {
+//				if (!checkedDead.contains(deadCellPos) && getNumNeighbours(deadCellPos[0],deadCellPos[1])==3){
+//					//Cell is born.
+//					createCell(deadCellPos[0],deadCellPos[1]);
+//				}
+			}
+		}
+		
+		
 	}
 
 	/** Returns a list of dead neighbours in arrays */
-	public List<long[]> getDeadNeighbours(Cell cell){
+	public List<long[]> getDeadNeighbours(long x, long y){
 
 		//Search currentBuffer map using cell position as key.
 		List<long[]> deadNeighbours = new ArrayList<long[]>();
-		long cellX = (long)cell.getX();
-		long cellY = (long)cell.getY();
+		long cellX = x;
+		long cellY = y;
 		long[] key = {cellX,cellY};
 		
 		//Check the neighbour to the left.
