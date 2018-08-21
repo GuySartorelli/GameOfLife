@@ -42,7 +42,7 @@ public class GameOfLifeUI extends Application {
 		
 		//TIMELINE
 		//________________
-		KeyFrame frame = new KeyFrame(Duration.millis(60), new EventHandler<ActionEvent>() {
+		KeyFrame frame = new KeyFrame(Duration.millis(100), new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
 				game.update();
@@ -130,7 +130,7 @@ public class GameOfLifeUI extends Application {
 	}
 
 	public void doPause(ActionEvent act) {
-		timeline.pause();
+			timeline.pause();
 	}
 
 	public void doStop(ActionEvent act) {
@@ -139,7 +139,6 @@ public class GameOfLifeUI extends Application {
 	}
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		launch();
 	}
 
