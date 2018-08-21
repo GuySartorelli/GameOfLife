@@ -4,7 +4,6 @@ import javafx.application.Application;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -25,10 +24,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -52,9 +48,10 @@ public class GameOfLifeUI extends Application {
 	
 
 	private int cellSize = 20;
+	private double minScale = 0.5; 
 	private Group displayBuffer = new Group();
 	private Game game = new Game(cellSize);
-	private GridBackground grid = new GridBackground(cellSize);
+	private GridBackground grid = new GridBackground(cellSize, minScale);
 	private Group scaleOffset = new Group(displayBuffer, grid);
 	
 	private Slider zoomSlider;
@@ -121,12 +118,11 @@ public class GameOfLifeUI extends Application {
 //		colorBox.getSelectionModel().select(THE_DEFAULT);
 		GridPane sliderPane = new GridPane();
 		zoomSlider = new Slider();
-		zoomSlider.setMin(0.5);
+		zoomSlider.setMin(minScale);
 		zoomSlider.setMax(3);
-		zoomSlider.setMajorTickUnit(0.5);
+		zoomSlider.setMajorTickUnit(minScale);
 		zoomSlider.setMinorTickCount(0);
-		zoomSlider.setBlockIncrement(0.5);
-//		zoomSlider.setSnapToTicks(true);
+//		zoomSlider.setBlockIncrement(minScale);
 		zoomSlider.setShowTickLabels(true);
 //		zoomSlider.setShowTickMarks(true);
 		zoomSlider.setValue(1);

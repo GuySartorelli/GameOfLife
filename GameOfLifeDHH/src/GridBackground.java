@@ -9,13 +9,15 @@ public class GridBackground extends Parent {
 	private int cellSize;
 	private double dx;
 	private double dy;
+	private double minScale;
 	private double scale = 1;
 	private double lineWidth = 1;
 	private boolean adjustLineWidthToScale = false;
 	
-	public GridBackground(int cellSize) {
+	public GridBackground(int cellSize, double minScale) {
 		super();
 		this.cellSize = cellSize;
+		this.minScale = minScale;
 	}
 	
 	/**
@@ -23,13 +25,13 @@ public class GridBackground extends Parent {
 	 */
 	public void construct() {
 		List<Line> buffer = new ArrayList<Line>();
-		double width = getScene().getWidth();
-		double height = getScene().getHeight();
+		double width = getScene().getWidth() / minScale;
+		double height = getScene().getHeight() / minScale;
 		//Vertical lines
-		double x = cellSize + dx;
+		double x = -cellSize + dx;
 		while (x < width) {
 			//set linewidth if needed
-			Line line = new Line(x, -cellSize, x, height);
+			Line line = new Line(x, -height, x, height);
 			if (!adjustLineWidthToScale) {
 				line.setStrokeWidth(lineWidth / scale);
 			} else {
@@ -40,9 +42,9 @@ public class GridBackground extends Parent {
 			x+= cellSize;
 		}
 		//Horizontal lines
-		double y = cellSize + dy;
+		double y = -cellSize + dy;
 		while (y < height) {
-			Line line = new Line(-cellSize, y, width, y);
+			Line line = new Line(-width, y, width, y);
 			if (!adjustLineWidthToScale) {
 				line.setStrokeWidth(lineWidth / scale);
 			} else {
