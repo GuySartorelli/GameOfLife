@@ -6,6 +6,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
 public class GridBackground extends Parent {
+	private final Color color = Color.GRAY;
 	private int cellSize;
 	private double dx;
 	private double dy;
@@ -29,6 +30,7 @@ public class GridBackground extends Parent {
 		while (x < width) {
 			Line line = new Line(x, 0, x, height);
 			line.setStrokeWidth(lineWidth);
+			line.setStroke(color);
 			buffer.add(line);
 			x+= cellSize;
 		}
@@ -37,6 +39,7 @@ public class GridBackground extends Parent {
 		while (y < height) {
 			Line line = new Line(0, y, width, y);
 			line.setStrokeWidth(lineWidth);
+			line.setStroke(color);
 			buffer.add(line);
 			y+= cellSize;
 		}
