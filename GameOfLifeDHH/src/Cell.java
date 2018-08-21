@@ -10,7 +10,9 @@ import javafx.scene.shape.StrokeType;
  * @author saadheba
  *
  */
-public class Cell extends Rectangle {	private int lifespan = 1;
+public class Cell extends Rectangle {
+
+	private int lifespan = 0;
 	private Game game;
 
 	/**
