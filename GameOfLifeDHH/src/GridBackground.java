@@ -6,11 +6,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
 public class GridBackground extends Parent {
-	private final Color color = Color.GRAY;
 	private int cellSize;
 	private double dx;
 	private double dy;
-	private int lineWidth = 1;
+	private double scale = 1;
+	private double lineWidth = 1;
 	private boolean adjustLineWidthToScale = false;
 	
 	public GridBackground(int cellSize) {
@@ -26,20 +26,28 @@ public class GridBackground extends Parent {
 		double width = getScene().getWidth();
 		double height = getScene().getHeight();
 		//Vertical lines
-		double x = cellSize*0.5 + dx;
+		double x = cellSize + dx;
 		while (x < width) {
-			Line line = new Line(x, 0, x, height);
-			line.setStrokeWidth(lineWidth);
-			line.setStroke(color);
+			//set linewidth if needed
+			Line line = new Line(x, -cellSize, x, height);
+			if (!adjustLineWidthToScale) {
+				line.setStrokeWidth(lineWidth / scale);
+			} else {
+				line.setStrokeWidth(lineWidth);
+			}
+			
 			buffer.add(line);
 			x+= cellSize;
 		}
 		//Horizontal lines
-		double y = cellSize*0.5 + dy;
+		double y = cellSize + dy;
 		while (y < height) {
-			Line line = new Line(0, y, width, y);
-			line.setStrokeWidth(lineWidth);
-			line.setStroke(color);
+			Line line = new Line(-cellSize, y, width, y);
+			if (!adjustLineWidthToScale) {
+				line.setStrokeWidth(lineWidth / scale);
+			} else {
+				line.setStrokeWidth(lineWidth);
+			}
 			buffer.add(line);
 			y+= cellSize;
 		}
@@ -67,9 +75,9 @@ public class GridBackground extends Parent {
 	 * @param scaleBy
 	 */
 	public void scale(double scaleBy) {
-		cellSize *= scaleBy;
-		if (adjustLineWidthToScale) {
-			lineWidth *= scaleBy;
+		if (scale != scaleBy) {
+			scale = scaleBy;
+			construct();
 		}
 	}
 }

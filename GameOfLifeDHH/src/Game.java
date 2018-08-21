@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 //This is the game class.
 
@@ -201,6 +202,10 @@ public class Game {
 			patterns = parser.getContents();
 		} catch(IOException e) {System.out.println(e);}
 		
+	}
+	
+	public Set<String> getPatternNames(){
+		return patterns.keySet();
 	}
 	
 }
