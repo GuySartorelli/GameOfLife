@@ -54,6 +54,11 @@ public class Game {
 		swapBuffers();
 	}
 	
+	/**
+	 * swapBuffer puts backBuffer into currentBuffer.
+	 * It does this by creating a copy of backBuffer and sets it into currentBuffer. 
+	 * Then backBuffer is cleared.
+	 */
 	public void swapBuffers() {
 		currentBuffer.clear();
 		currentBuffer.putAll(backBuffer);
