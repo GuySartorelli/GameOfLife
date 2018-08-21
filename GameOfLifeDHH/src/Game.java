@@ -26,10 +26,6 @@ public class Game {
 
 	/** Getter for currentBuffer */
 	public Collection<Cell> getCurrentBuffer() {
-		System.out.println("getting current buffer");
-		for (Position cell: currentBuffer.keySet()) {
-			System.out.println(currentBuffer.get(cell));
-		}
 		return currentBuffer.values();
 	}
 	
@@ -40,6 +36,8 @@ public class Game {
 		swapBuffers();
 	}
 	
+	/**Clears the currentBuffer, puts all the cells from backBuffer into the currentBuffer, then
+	 * clears the backBuffer. This is called at the end of Game's update method.*/
 	public void swapBuffers() {
 		currentBuffer.clear();
 		currentBuffer.putAll(backBuffer);
@@ -92,14 +90,12 @@ public class Game {
 			//Get the list of dead neighbours around the cell.
 			List<Position> deadNeighbours = getDeadNeighbours(cellPos.getX(),cellPos.getY());
 			//Iterate through the cell's deadNeighbours list to check whether it should be born.
-			String deadCellPositions = "";
 			for (Position deadCellPos: deadNeighbours) {
 				if (!checkedDead.contains(deadCellPos) && getNumNeighbours(deadCellPos.getX(),deadCellPos.getY())==3){
 					//Cell is born.
 					createCell(deadCellPos.getX(),deadCellPos.getY());
 				}
 				checkedDead.add(deadCellPos);
-				deadCellPositions += +deadCellPos.getX()+","+deadCellPos.getY()+"  ";
 			}
 			
 			//Check self to see if it should remain alive or die.
@@ -108,8 +104,6 @@ public class Game {
 				createCell(cellPos.getX(),cellPos.getY());
 			} 
 		}
-		
-		
 	}
 
 	/** Returns a list of dead neighbours in arrays */
@@ -157,12 +151,12 @@ public class Game {
 			key.setX(key.getX()-cellSize);
 		}
 		
-		//Testing:
-		String returnedDeadNeighbours = "returned";
-		for (Position testCell: deadNeighbours) {
-			returnedDeadNeighbours += testCell.getX()+","+testCell.getY()+"  ";
-		}
-		System.out.println(returnedDeadNeighbours);
+//		//Testing:
+//		String returnedDeadNeighbours = "returned";
+//		for (Position testCell: deadNeighbours) {
+//			returnedDeadNeighbours += testCell.getX()+","+testCell.getY()+"  ";
+//		}
+//		System.out.println(returnedDeadNeighbours);
 
 		return deadNeighbours;
 	}
