@@ -7,15 +7,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-//This is the game class.
+/**
+ * Class to for creating Game object.
+ * @author shawbeva
+ *
+ */
 
 public class Game {
 	private Map<Position, Cell> currentBuffer = new HashMap<Position, Cell>();
 	private Map<Position, Cell> backBuffer = new HashMap<Position, Cell>();
 	private int cellSize;
 	private Map<String, List<int[]>> patterns;
-	
-	/* Constructor */
+
+	/**
+	 * Constructor for the game.
+	 * @param cellSize
+	 * cellSize is the length of width and height of each Cell object.
+	 */
 	public Game(int cellSize) {
 		this.cellSize = cellSize;
 		parsePatterns();
@@ -27,59 +35,86 @@ public class Game {
 
 	/** Getter for currentBuffer */
 	public Collection<Cell> getCurrentBuffer() {
-		System.out.println("getting current buffer");
+
+		//		System.out.println("getting current buffer");
 		for (Position cell: currentBuffer.keySet()) {
-			System.out.println(currentBuffer.get(cell));
+			//			System.out.println(currentBuffer.get(cell));
 		}
 		return currentBuffer.values();
 	}
-	
-	/** Update Method */
+
+	/**
+	 * update method first checks the Cells and then swaps the buffers.
+	 * update method calls checkCells method and swapbuffer methods.
+	 * checkCells checks if the cell will live or die and checks 
+	 * swapBuffer creates a copy of backBuffer and sets it into currentBuffer. 
+	 * Then backBuffer is cleared.
+	 */
 	public void update() {
 		//defineInitialPattern();//remove for production
 		checkCells();
 		swapBuffers();
+		updateCells();
 	}
-	
+	public void updateCells() {
+		for(Cell cell:currentBuffer.values()) {
+			cell.update();
+		}
+	}
+
+	/**
+	 * swapBuffer puts backBuffer into currentBuffer.
+	 * It does this by creating a copy of backBuffer and sets it into currentBuffer. 
+	 * Then backBuffer is cleared.
+	 */
 	public void swapBuffers() {
 		currentBuffer.clear();
 		currentBuffer.putAll(backBuffer);
 		backBuffer.clear();
 	}
-	
-	/** Get Number of neighbours Method */
-	public int getNumNeighbours(long x,long y) {
-		// find a live cell in the currentBuffer
-		// then find how many live neighbour cells we have 
+
+	/**
+	 * getNumNeightbours gets Number of neighbours surrounding a cell 
+	 * and returns this number. 
+	 * @param x
+	 * Cell x position is passed in.
+	 * @param y
+	 * Cell y position is passed in
+	 * @return
+	 * This int value is the number of neighbours surrounding the given Cell.
+	 */
+	public int getNumNeighbours(double x,double y) {
+
 		int totalNeighbours = 0;
 
-		//create list to store cell's neighbouring positions.
+		/**create list to store cell's neighbouring positions.*/
 		List<Position> neighbourPos = new ArrayList<Position>();
-		
-		//construct 8 positions to check around cell in long [] format
+
+		/**construct 8 positions to check around cell in double [] format
+		Top row.*/
 		Position leftTopPos = new Position (x-cellSize, y-cellSize);
 		Position topPos = new Position (x, y-cellSize);
 		Position rightTopPos = new Position (x+cellSize, y-cellSize);
-		
+		/**Middle row.*/
 		Position leftPos = new Position (x-cellSize, y);
 		Position rightPos = new Position (x+cellSize, y);
-		
+		/**Bottom row.*/
 		Position leftBottomPos = new Position (x-cellSize, y+cellSize);
 		Position bottomPos = new Position (x, y+cellSize);
 		Position rightBottomPos = new Position (x+cellSize, y+cellSize);
-		
-		//adding all 8 positions into the ArrayList neighbourPos.
+
+		/**adding all 8 positions into the ArrayList neighbourPos.*/
 		neighbourPos.addAll(Arrays.asList(leftTopPos,leftPos,leftBottomPos,
 				topPos,bottomPos,rightTopPos, rightPos,rightBottomPos));
 
-		//ask currentBuffer what is in that position in currentBuffer
+		/**ask currentBuffer what is in that position in currentBuffer*/
 		for(Position pos : neighbourPos) {						
 			if(currentBuffer.containsKey(pos)) {
 				totalNeighbours++;
 			}
 		}
 
-		return totalNeighbours; // to be changed
+		return totalNeighbours;
 	}	
 	
 	/** Checks all cells, by getting neighbours and num of neighbours
@@ -90,6 +125,7 @@ public class Game {
 		//Once checked, the position of the dead neighbour is added to the checkedDead list.
 		List<Position> checkedDead = new ArrayList<Position>();
 		for (Position cellPos: currentBuffer.keySet()) {
+
 			//Get the list of dead neighbours around the cell.
 			List<Position> deadNeighbours = getDeadNeighbours(cellPos.getX(),cellPos.getY());
 			//Iterate through the cell's deadNeighbours list to check whether it should be born.
@@ -106,34 +142,43 @@ public class Game {
 			//Check self to see if it should remain alive or die.
 			if (getNumNeighbours(cellPos.getX(),cellPos.getY()) == 2 || getNumNeighbours(cellPos.getX(),cellPos.getY()) == 3) {
 				//Cell remains alive. Added to back buffer within createCell method.
-				createCell(cellPos.getX(),cellPos.getY());
+				backBuffer.put(cellPos, currentBuffer.get(cellPos));
 			} 
+
 		}
-		
-		
+
+
 	}
 
-	/** Returns a list of dead neighbours in arrays */
-	public List<Position> getDeadNeighbours(long x, long y){
+	/** Returns a list of dead neighbours in arrays
+	 * 
+	 * @param x
+	 * 
+	 * @param y
+	 * 
+	 * @return
+	 * 
+	 */
+	public List<Position> getDeadNeighbours(double x, double y){
 
 		//Search currentBuffer map using cell position as key.		
-		List<Position> deadNeighbours = new ArrayList<Position>();
-		long cellX = x;
-		long cellY = y;
+		List<Position> checkedDeadNeighbours = new ArrayList<Position>();
+		double cellX = x;
+		double cellY = y;
 		Position key = new Position (cellX,cellY);
 
 		//Check the neighbour to the left.
 		key.setX(key.getX()-cellSize);
 		if (!currentBuffer.containsKey(key)) {
 			Position position = new Position (key.getX(),key.getY());
-			deadNeighbours.add(position);
+			checkedDeadNeighbours.add(position);
 		}
 		//Check the 3 neighbours above from left to right.
 		key.setY(key.getY()-cellSize);
 		for (int i = 0; i < 3; i++) {
 			if (!currentBuffer.containsKey(key)) {
 				Position position = new Position (key.getX(),key.getY());
-				deadNeighbours.add(position);
+				checkedDeadNeighbours.add(position);
 			}
 			if (i != 2) {
 				key.setX(key.getX()+cellSize);
@@ -143,34 +188,28 @@ public class Game {
 		key.setY(key.getY()+cellSize);
 		if (!currentBuffer.containsKey(key)) {
 			Position position = new Position (key.getX(),key.getY());
-			
-			deadNeighbours.add(position);
+
+			checkedDeadNeighbours.add(position);
 		}
 		//Check the 3 neighbours below from right to left.
 		key.setY( key.getY()+ cellSize);
-		
+
 		for (int i = 0; i < 3; i++) {
 			if (!currentBuffer.containsKey(key)) {
 				Position position = new Position (key.getX(),key.getY());
-			
-				deadNeighbours.add(position);
+
+				checkedDeadNeighbours.add(position);
 			}
 			key.setX(key.getX()-cellSize);
 		}
 		
-		//Testing:
-		String returnedDeadNeighbours = "returned";
-		for (Position testCell: deadNeighbours) {
-			returnedDeadNeighbours += testCell.getX()+","+testCell.getY()+"  ";
-		}
-		System.out.println(returnedDeadNeighbours);
 
-		return deadNeighbours;
+		return checkedDeadNeighbours;
 	}
 	
 	/** creates cell */
-	public void createCell(long x, long y) {
-		Cell cell = new Cell(cellSize, x, y);
+	public void createCell(double x, double y) {
+		Cell cell = new Cell(this, cellSize, x, y);
 		backBuffer.put(new Position(x,y), cell);
 	}
 	
@@ -184,13 +223,11 @@ public class Game {
 	public void defineInitialPattern() {
 		//NOTE: Decide whether it should be random or not
 		int patternIndex = (int)(Math.random() * patterns.size());
-		List<int[]> pattern = (List<int[]>) patterns.values().toArray()[patternIndex];
+		List<int[]> pattern = patterns.get("snacker");//(List<int[]>) patterns.values().toArray()[patternIndex];
 		for (int[] position : pattern) {
-			long x = position[0]*cellSize;
-			long y = position[1]*cellSize;
-			Cell cell = new Cell(cellSize,x, y);
-			Position cellPos = new Position(x,y);
-			currentBuffer.put(cellPos, cell);
+			double x = position[0]*cellSize;
+			double y = position[1]*cellSize;
+			createCell(x, y);
 		}
 	}
 	
