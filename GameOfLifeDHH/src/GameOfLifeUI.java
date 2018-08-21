@@ -90,6 +90,8 @@ public class GameOfLifeUI extends Application {
 		displayBuffer.setTranslateX(width*0.5);
 		displayBuffer.setTranslateY(height*0.5);
 
+		primaryStage.widthProperty().addListener((obs, oldVal, newVal) -> grid.construct());
+		primaryStage.heightProperty().addListener((obs, oldVal, newVal) -> grid.construct());
 		primaryStage.setTitle("Conway's Game of Life");
 		primaryStage.setScene(scene);
 		primaryStage.show();
