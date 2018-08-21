@@ -26,17 +26,23 @@ public class Game {
 
 	/** Getter for currentBuffer */
 	public Collection<Cell> getCurrentBuffer() {
+		System.out.println("getting current buffer");
+		for (Position cell: currentBuffer.keySet()) {
+			System.out.println(currentBuffer.get(cell));
+		}
 		return currentBuffer.values();
 	}
 	
 	/** Update Method */
 	public void update() {
+		//defineInitialPattern();//remove for production
+		checkCells();
 		swapBuffers();
-		defineInitialPattern();//remove for production
 	}
 	
 	public void swapBuffers() {
-		currentBuffer = backBuffer;
+		currentBuffer.clear();
+		currentBuffer.putAll(backBuffer);
 		backBuffer.clear();
 	}
 	
@@ -66,16 +72,12 @@ public class Game {
 				topPos,bottomPos,rightTopPos, rightPos,rightBottomPos));
 
 		//ask currentBuffer what is in that position in currentBuffer
-		for(Position pos : neighbourPos) {
-//			System.out.println("checking key: "+ pos[0]+","+pos[1]);
-						
+		for(Position pos : neighbourPos) {						
 			if(currentBuffer.containsKey(pos)) {
 				totalNeighbours++;
 			}
 		}
-		for (Position cell: currentBuffer.keySet()) {
-//			System.out.println("currentBuffer cell: "+ cell[0]+","+cell[1]);
-		}
+
 		return totalNeighbours; // to be changed
 	}	
 	
@@ -90,12 +92,21 @@ public class Game {
 			//Get the list of dead neighbours around the cell.
 			List<Position> deadNeighbours = getDeadNeighbours(cellPos.getX(),cellPos.getY());
 			//Iterate through the cell's deadNeighbours list to check whether it should be born.
+			String deadCellPositions = "";
 			for (Position deadCellPos: deadNeighbours) {
-//				if (!checkedDead.contains(deadCellPos) && getNumNeighbours(deadCellPos[0],deadCellPos[1])==3){
-//					//Cell is born.
-//					createCell(deadCellPos[0],deadCellPos[1]);
-//				}
+				if (!checkedDead.contains(deadCellPos) && getNumNeighbours(deadCellPos.getX(),deadCellPos.getY())==3){
+					//Cell is born.
+					createCell(deadCellPos.getX(),deadCellPos.getY());
+				}
+				checkedDead.add(deadCellPos);
+				deadCellPositions += +deadCellPos.getX()+","+deadCellPos.getY()+"  ";
 			}
+			
+			//Check self to see if it should remain alive or die.
+			if (getNumNeighbours(cellPos.getX(),cellPos.getY()) == 2 || getNumNeighbours(cellPos.getX(),cellPos.getY()) == 3) {
+				//Cell remains alive. Added to back buffer within createCell method.
+				createCell(cellPos.getX(),cellPos.getY());
+			} 
 		}
 		
 		
@@ -147,9 +158,11 @@ public class Game {
 		}
 		
 		//Testing:
-//		for (Position testCell: deadNeighbours) {
-//			System.out.println(testCell[0]+","+testCell[1]);
-//		}
+		String returnedDeadNeighbours = "returned";
+		for (Position testCell: deadNeighbours) {
+			returnedDeadNeighbours += testCell.getX()+","+testCell.getY()+"  ";
+		}
+		System.out.println(returnedDeadNeighbours);
 
 		return deadNeighbours;
 	}
@@ -157,8 +170,7 @@ public class Game {
 	/** creates cell */
 	public void createCell(long x, long y) {
 		Cell cell = new Cell(cellSize, x, y);
-		System.out.println(getNumNeighbours(x,y));
-		currentBuffer.put(new Position (x,y), cell);
+		backBuffer.put(new Position(x,y), cell);
 	}
 	
 	/** places cells randomly
@@ -173,7 +185,11 @@ public class Game {
 		int patternIndex = (int)(Math.random() * patterns.size());
 		List<int[]> pattern = (List<int[]>) patterns.values().toArray()[patternIndex];
 		for (int[] position : pattern) {
-			createCell(position[0]*cellSize, position[1]*cellSize);
+			long x = position[0]*cellSize;
+			long y = position[1]*cellSize;
+			Cell cell = new Cell(cellSize,x, y);
+			Position cellPos = new Position(x,y);
+			currentBuffer.put(cellPos, cell);
 		}
 	}
 	
