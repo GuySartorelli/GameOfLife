@@ -6,7 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//This is the game class.
+/**
+ * Class to for creating Game object.
+ * @author shawbeva
+ *
+ */
 
 public class Game {
 	private Map<Position, Cell> currentBuffer = new HashMap<Position, Cell>();
@@ -14,7 +18,11 @@ public class Game {
 	private int cellSize;
 	private Map<String, List<int[]>> patterns;
 	
-	/* Constructor */
+	/**
+	 * Constructor for the game.
+	 * @param cellSize
+	 * cellSize is the length of width and height.
+	 */
 	public Game(int cellSize) {
 		this.cellSize = cellSize;
 		parsePatterns();
