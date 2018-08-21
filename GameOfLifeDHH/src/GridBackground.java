@@ -9,7 +9,8 @@ public class GridBackground extends Parent {
 	private int cellSize;
 	private double dx;
 	private double dy;
-	private final int LINE_WIDTH = 1;
+	private int lineWidth = 1;
+	private boolean adjustLineWidthToScale = false;
 	
 	public GridBackground(int cellSize) {
 		super();
@@ -27,8 +28,7 @@ public class GridBackground extends Parent {
 		double x = cellSize*0.5 + dx;
 		while (x < width) {
 			Line line = new Line(x, 0, x, height);
-			line.setStroke(Color.BLACK);
-			line.setStrokeWidth(LINE_WIDTH);
+			line.setStrokeWidth(lineWidth);
 			buffer.add(line);
 			x+= cellSize;
 		}
@@ -36,8 +36,7 @@ public class GridBackground extends Parent {
 		double y = cellSize*0.5 + dy;
 		while (y < height) {
 			Line line = new Line(0, y, width, y);
-			line.setStroke(Color.BLACK);
-			line.setStrokeWidth(LINE_WIDTH);
+			line.setStrokeWidth(lineWidth);
 			buffer.add(line);
 			y+= cellSize;
 		}
@@ -56,11 +55,18 @@ public class GridBackground extends Parent {
 		construct();
 	}
 	
+	public void adjustLineWidthToScale(boolean value) {
+		adjustLineWidthToScale = value;
+	}
+	
 	/**
 	 * Scales the grid whilst maintaining a consistent lineWidth
 	 * @param scaleBy
 	 */
 	public void scale(double scaleBy) {
-		
+		cellSize *= scaleBy;
+		if (adjustLineWidthToScale) {
+			lineWidth *= scaleBy;
+		}
 	}
 }
