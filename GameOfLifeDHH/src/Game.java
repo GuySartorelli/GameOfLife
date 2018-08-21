@@ -21,7 +21,7 @@ public class Game {
 	/**
 	 * Constructor for the game.
 	 * @param cellSize
-	 * cellSize is the length of width and height.
+	 * cellSize is the length of width and height of each Cell object.
 	 */
 	public Game(int cellSize) {
 		this.cellSize = cellSize;
@@ -41,7 +41,13 @@ public class Game {
 		return currentBuffer.values();
 	}
 	
-	/** Update Method */
+	/**
+	 * update method first checks the Cells and then swaps the buffers.
+	 * update method calls checkCells method and swapbuffer methods.
+	 * checkCells checks if the cell will live or die and checks 
+	 * swapBuffer creates a copy of backBuffer and sets it into currentBuffer. 
+	 * Then backBuffer is cleared.
+	 */
 	public void update() {
 		//defineInitialPattern();//remove for production
 		checkCells();
