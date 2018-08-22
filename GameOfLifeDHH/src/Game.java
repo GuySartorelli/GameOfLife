@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 /**
  * Class to for creating Game object.
@@ -17,8 +16,6 @@ import java.util.TreeMap;
 public class Game {
 	private Map<Position, Cell> currentBuffer = new HashMap<Position, Cell>();
 	private Map<Position, Cell> backBuffer = new HashMap<Position, Cell>();
-	//private TreeMap<Position, Cell> backBuffer = new TreeMap<Position, Cell>();
-
 	private int cellSize;
 	private Map<String, List<int[]>> patterns;
 
@@ -30,7 +27,7 @@ public class Game {
 	public Game(int cellSize) {
 		this.cellSize = cellSize;
 		parsePatterns();
-		//defineInitialPattern(); Used to place selected pattern before placing pattern funcionality.
+		defineInitialPattern();
 		
 		//Test getDeadNeighbours method.
 		getDeadNeighbours(100,100);
@@ -237,6 +234,20 @@ public class Game {
 		
 	}
 	
+
+	/** places cells with defined initial patterns */
+	public void defineInitialPattern() {
+		//NOTE: Decide whether it should be random or not
+		int patternIndex = (int)(Math.random() * patterns.size());
+		List<int[]> pattern = /*patterns.get("snacker");*/(List<int[]>) patterns.values().toArray()[patternIndex];
+		for (int[] position : pattern) {
+			double x = position[0]*cellSize;
+			double y = position[1]*cellSize;
+			createCell(x, y);
+			//swapBuffers();
+		}
+	}
+	
 	/** Takes pattern templates from file and parse them to map
 	 *  */
 	private void parsePatterns() {
@@ -249,6 +260,12 @@ public class Game {
 	
 	public Set<String> getPatternNames(){
 		return patterns.keySet();
+	}
+	
+	public void restart() {
+		
+		swapBuffers();
+		defineInitialPattern();
 	}
 	
 }

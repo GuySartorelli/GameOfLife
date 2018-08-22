@@ -44,6 +44,7 @@ import javafx.util.Callback;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 
+
 /**
  * CONWAYS GAME OF LIFE
  * 
@@ -51,6 +52,7 @@ import javafx.util.StringConverter;
  */
 
 public class GameOfLifeUI extends Application {
+	
 	private int width = 700, height = 500;
 	private int padding = 5;
 	
@@ -173,7 +175,7 @@ public class GameOfLifeUI extends Application {
 		playButton.setOnAction(this::doPlay);
 	
 		//nextGenButton.setOnAction(this::doPause);
-		rotateButton.setOnAction(this::doStop);
+		rotateButton.setOnAction(this::doRestart);
 		
 		toggleBackGroundButton.setOnAction(this::doBlackAndWhite);
 		
@@ -310,9 +312,12 @@ public class GameOfLifeUI extends Application {
 		}
 	}	
 
-	public void doStop(ActionEvent act) {
-		timeline.stop();
-		System.exit(0);
+	public void doRestart(ActionEvent act) {
+		displayBuffer.getChildren().clear();
+		timeline.stop();	
+		game.restart();
+		
+		
 	}
 
 	public static void main(String[] args) {
@@ -320,6 +325,8 @@ public class GameOfLifeUI extends Application {
 	}
 
 	
+
+
 	/**
 	 * Handles mouse dragging for infinite scrolling
 	 */
@@ -376,7 +383,7 @@ public class GameOfLifeUI extends Application {
 			double y = mouseY + position[1]*cellSize;
 			createTemporaryCell(x,y);
 		}
-	}
+}
 
 	private class Convertor extends StringConverter<Map.Entry<String, Paint[]>>{
 
