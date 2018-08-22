@@ -13,7 +13,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 /**
  * Class to store info about the cell object and extends Rectangle
- * @author saadheba
+ * @author DirgleHurbleHerb
  *
  */
 public class Cell extends Rectangle {
@@ -21,7 +21,7 @@ public class Cell extends Rectangle {
 	//	private static ColorOption defaultOption = new ColorOption("Lifespan",Color.YELLOW, Color.GREEN, Color.BLUE, Color.RED);
 	private int lifespan = 0;
 	private Game game;
-	private static Color custom = Color.CHOCOLATE;
+	private static Color custom = Color.DARKSALMON;
 
 
 
@@ -127,14 +127,16 @@ public class Cell extends Rectangle {
 		Map<String,Paint[]> colorRules = new HashMap<String,Paint[]>();
 		colorRules.put("Lifespan",new Paint[] {Color.YELLOW, 
 				new LinearGradient(0,0,1,1,true, CycleMethod.REPEAT,
-						new Stop(0,Color.CYAN), 
+						new Stop(0.3,Color.CYAN), 
 						new Stop(0.5,Color.BLUE),
-						new Stop(1,Color.MAGENTA)),
+						new Stop(0.7,Color.MAGENTA)),
 						Color.RED});//Color.YELLOW, Color.GREEN, Color.BLUE, Color.RED
 		colorRules.put("Neighbours",new Paint[] {Color.YELLOW, Color.ORANGE, Color.RED});
 		colorRules.put("Random", new Paint [] {new LinearGradient(0,0,1,1,true, CycleMethod.REPEAT,
-						new Stop(0,Color.GOLD), 
-						new Stop(1,Color.AQUAMARINE))});
+						new Stop(0.2,Color.GOLD),
+						new Stop(0.4,Color.FORESTGREEN),
+						new Stop(0.6,Color.DARKSALMON),
+						new Stop(0.8,Color.AQUAMARINE))});
 		colorRules.put("Custom",new Paint[] {custom});
 		//colorRules.add(defaultOption);
 		return colorRules;

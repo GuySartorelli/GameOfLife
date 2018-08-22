@@ -88,7 +88,8 @@ public class GameOfLifeUI extends Application {
 	private String backgroundColour = "WHITE"; 
 
 	private int cellSize = 20;
-	private double minScale = 0.5; 
+	private double minScale = 0.1; 
+	private double scale = 1;
 	private Group displayBuffer = new Group();
 	private Game game = new Game(cellSize);
 	private GridBackground grid = new GridBackground(cellSize, minScale);
@@ -200,20 +201,16 @@ public class GameOfLifeUI extends Application {
 
 		colorBox.setCellFactory(new Factory());
 		colorBox.setConverter(new Convertor());
-
-
-		
-		
 		GridPane sliderPane = new GridPane();
-		
+
 		zoomSlider = new Slider();
 		zoomSlider.setMin(minScale);
 		zoomSlider.setMax(3);
 		zoomSlider.setMajorTickUnit(minScale);
 		zoomSlider.setMinorTickCount(0);
-//		zoomSlider.setBlockIncrement(minScale);
+		//		zoomSlider.setBlockIncrement(minScale);
 		//zoomSlider.setShowTickLabels(true);
-//		zoomSlider.setShowTickMarks(true);
+		//		zoomSlider.setShowTickMarks(true);
 		zoomSlider.setValue(1);
 		zoomSlider.valueProperty().addListener(this::doZoom);
 
@@ -316,15 +313,19 @@ public class GameOfLifeUI extends Application {
 		displayBuffer.getChildren().clear();
 		timeline.stop();	
 		game.restart();
-		
-		
+		resetTranslation();
+	}
+	
+	private void resetTranslation() {
+		scrollGame(-displayBuffer.getTranslateX(), -displayBuffer.getTranslateY());
+		scrollGame(scene.getWidth()*0.5, scene.getHeight()*0.5);
 	}
 
 	public static void main(String[] args) {
 		launch();
 	}
 
-	
+
 
 
 	/**
@@ -336,30 +337,30 @@ public class GameOfLifeUI extends Application {
 		
 		@Override
 		public void handle(MouseEvent event) {
-			double x = event.getX()-displayBuffer.getTranslateX();
-			double y = event.getY()-displayBuffer.getTranslateY();
-			double snapX = Math.round(x/cellSize) * cellSize;
-			double snapY = Math.round(y/cellSize) * cellSize;
+			double offsetX = (event.getX()/scale-displayBuffer.getTranslateX());
+			double offsetY = (event.getY()/scale-displayBuffer.getTranslateY());
+			double snapX = Math.round(offsetX/cellSize) * cellSize;
+			double snapY = Math.round(offsetY/cellSize) * cellSize;
 			if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {
-				prevX = x;
-				prevY = y;
-						
+				prevX = offsetX;
+				prevY = offsetY;
+
 				game.createPattern(patternBox.getValue(),snapX,snapY);
 				displayBuffer.getChildren().clear();
 				displayBuffer.getChildren().addAll(game.getCurrentBuffer());	
 			}
-			
+
 			else if (event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
-				double dx = prevX - x;
-				double dy = prevY - y;
+				double dx = prevX - offsetX;
+				double dy = prevY - offsetY;
 				scrollGame(dx, dy);
-				prevX = x;
-				prevY = y;
+				prevX = offsetX;
+				prevY = offsetY;
 			}
 			/* Method for tracking the mouse with an outline of the pattern about to be placed,
 			   and then once clicked add the pattern to the view*/
 			if (event.getEventType() == MouseEvent.MOUSE_MOVED) {
-				
+
 				displayBuffer.getChildren().clear();
 				displayBuffer.getChildren().addAll(game.getCurrentBuffer());
 				createTemporaryPattern(patternBox.getValue(),snapX,snapY);
@@ -382,7 +383,7 @@ public class GameOfLifeUI extends Application {
 			double y = mouseY + position[1]*cellSize;
 			createTemporaryCell(x,y);
 		}
-}
+	}
 
 	private class Convertor extends StringConverter<Map.Entry<String, Paint[]>>{
 
@@ -414,7 +415,8 @@ public class GameOfLifeUI extends Application {
 					box = new HBox(5);
 				}
 
-				@Override protected void updateItem(Map.Entry<String,Paint[]> item, boolean empty) {
+				@Override 
+				protected void updateItem(Map.Entry<String,Paint[]> item, boolean empty) {
 					super.updateItem(item, empty);
 
 					if (item == null || empty) {
