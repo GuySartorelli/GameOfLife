@@ -330,7 +330,6 @@ public class GameOfLifeUI extends Application {
 		private double prevX;
 		private double prevY;
 
-	
 		@Override
 		public void handle(MouseEvent event) {
 			double x = event.getX();
