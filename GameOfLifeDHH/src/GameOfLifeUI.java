@@ -374,9 +374,6 @@ public class GameOfLifeUI extends Application {
 		launch();
 	}
 
-
-
-
 	/**
 	 * Handles mouse dragging for infinite scrolling
 	 */
