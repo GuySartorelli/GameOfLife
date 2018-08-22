@@ -15,7 +15,6 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
@@ -135,7 +134,7 @@ public class GameOfLifeUI extends Application {
 
 		//COLORPICKER
 		//____________________
-	
+		
 		
 		
 		//LAYOUT
@@ -208,13 +207,18 @@ public class GameOfLifeUI extends Application {
 		zoomSlider.setMax(3);
 		zoomSlider.setMajorTickUnit(minScale);
 		zoomSlider.setMinorTickCount(0);
-		//		zoomSlider.setBlockIncrement(minScale);
+		//zoomSlider.setBlockIncrement(minScale);
 		//zoomSlider.setShowTickLabels(true);
-		//		zoomSlider.setShowTickMarks(true);
+		//zoomSlider.setShowTickMarks(true);
 		zoomSlider.setValue(1);
 		zoomSlider.valueProperty().addListener(this::doZoom);
 
 		speedSlider = new Slider();
+		speedSlider.valueProperty().addListener(this::setSpeed);
+		speedSlider.setMin(0.1);
+		speedSlider.setMax(3);
+		speedSlider.setValue(1);
+		//speedSlider.setShowTickLabels(true);
 
 		patternPane.addColumn(0, patternLabel, patternBox);
 		colourPane.addColumn(1, colourLabel, colorBox);		
@@ -239,6 +243,10 @@ public class GameOfLifeUI extends Application {
 		primaryStage.setScene(scene);
 		primaryStage.show();
 		grid.construct(); //must be after stage is shown
+	}
+	
+	public void setSpeed(ObservableValue<? extends Number> ov, Number oldVal, Number newVal) {
+		timeline.setRate(newVal.doubleValue());
 	}
 	
 	public void doZoom(ObservableValue<? extends Number> ov, Number oldVal, Number newVal) {
