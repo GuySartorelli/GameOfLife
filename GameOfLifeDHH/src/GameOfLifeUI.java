@@ -226,6 +226,7 @@ public class GameOfLifeUI extends Application {
 
 		colorBox.setCellFactory(new Factory());
 		colorBox.setConverter(new Convertor());
+		//colorBox.addActionListener();
 		GridPane sliderPane = new GridPane();
 
 		zoomSlider = new Slider();
