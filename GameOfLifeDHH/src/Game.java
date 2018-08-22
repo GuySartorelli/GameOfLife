@@ -247,6 +247,7 @@ public class Game {
 	}
 	
 	public void restart() {
+		
 		swapBuffers();
 		defineInitialPattern();
 	}
