@@ -247,6 +247,7 @@ public class GameOfLifeUI extends Application {
 		scaleOffset.setScaleX(scaleVal);
 		scaleOffset.setScaleY(scaleVal);
 		grid.scale(scaleVal);
+		scale = scaleVal;
 		//zoomSlider.setValue(scaleVal);
 	}
 	
@@ -337,8 +338,8 @@ public class GameOfLifeUI extends Application {
 		
 		@Override
 		public void handle(MouseEvent event) {
-			double offsetX = (event.getX()/scale-displayBuffer.getTranslateX());
-			double offsetY = (event.getY()/scale-displayBuffer.getTranslateY());
+			double offsetX = event.getX()/scale - displayBuffer.getTranslateX();
+			double offsetY = event.getY()/scale - displayBuffer.getTranslateY();
 			double snapX = Math.round(offsetX/cellSize) * cellSize;
 			double snapY = Math.round(offsetY/cellSize) * cellSize;
 			if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {
