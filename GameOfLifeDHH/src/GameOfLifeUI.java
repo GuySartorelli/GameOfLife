@@ -109,10 +109,13 @@ public class GameOfLifeUI extends Application {
 		optionsBox.setSpacing(padding);
 		optionsBox.setPadding(new Insets(padding, padding, padding, padding));
 		optionsBox.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
+		
 		ComboBox<String> patternBox = new ComboBox<String>(FXCollections.observableArrayList(game.getPatternNames()));
 		patternBox.getSelectionModel().select("cell");
-		ComboBox<Node> colorBox = new ComboBox<Node>(FXCollections.observableArrayList(Cell.getColorRules()));
+		
+		ComboBox<ColorOption> colorBox = new ComboBox<ColorOption>(FXCollections.observableArrayList(Cell.getColorRules()));
 		colorBox.getSelectionModel().select(Cell.getDefaultColorRule());
+		
 		GridPane sliderPane = new GridPane();
 		zoomSlider = new Slider();
 		zoomSlider.setMin(minScale);
