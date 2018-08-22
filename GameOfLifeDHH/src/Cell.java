@@ -12,6 +12,7 @@ import javafx.scene.shape.StrokeType;
  */
 public class Cell extends Rectangle {
 
+	private static ColorOption defaultOption = new ColorOption("Solid");
 	private int lifespan = 0;
 	private Game game;
 
@@ -109,16 +110,24 @@ public class Cell extends Rectangle {
 	}
 	
 	/**
-	 * THIS NEEDS TO BE CHANGED LATER TO THE ACTUAL RULES
-	 * @return
+	 * Returns a list of all color options for use in a dropbox
+	 * @return List<ColorOption> list of all rules
 	 */
-	public static List<String> getColorRules() {
-		List<String> colorRules = new ArrayList<String>();
-		colorRules.add("Bog");
-		colorRules.add("Beg");
-		colorRules.add("Bug");
-		colorRules.add("Bag");
+	public static List<ColorOption> getColorRules() {
+		List<ColorOption> colorRules = new ArrayList<ColorOption>();
+		colorRules.add(new ColorOption("Lifespan",Color.YELLOW, Color.GREEN, Color.BLUE, Color.RED));
+		colorRules.add(new ColorOption("NumNeighbours",Color.YELLOW, Color.ORANGE, Color.RED));
+		colorRules.add(new ColorOption("Random",Color.RED, Color.BLUE));
+		colorRules.add(defaultOption);
 		return colorRules;
+	}
+	
+	/**
+	 * Returns a list of all color options for use in a dropbox
+	 * @return List<ColorOption> list of all rules
+	 */
+	public static ColorOption getDefaultColorRule() {
+		return defaultOption;
 		
 	}
 }

@@ -111,8 +111,8 @@ public class GameOfLifeUI extends Application {
 		optionsBox.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
 		ComboBox<String> patternBox = new ComboBox<String>(FXCollections.observableArrayList(game.getPatternNames()));
 		patternBox.getSelectionModel().select("cell");
-		ComboBox<Node> colorBox = new ComboBox<Node>();
-		//		colorBox.getSelectionModel().select(THE_DEFAULT);
+		ComboBox<Node> colorBox = new ComboBox<Node>(FXCollections.observableArrayList(Cell.getColorRules()));
+		colorBox.getSelectionModel().select(Cell.getDefaultColorRule());
 		GridPane sliderPane = new GridPane();
 		zoomSlider = new Slider();
 		zoomSlider.setMin(minScale);
@@ -136,7 +136,6 @@ public class GameOfLifeUI extends Application {
 
 		//COLORPICKER
 		//____________________
-		colorBox.setItems(FXCollections.observableArrayList(new ColorOptions("Lifespan",Color.RED, Color.BLUE)));
 		
 		displayBuffer.getChildren().addAll(game.getCurrentBuffer());
 		scrollGame(width*0.5, height*0.5);
