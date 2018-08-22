@@ -10,6 +10,7 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
@@ -167,8 +168,8 @@ public class GameOfLifeUI extends Application {
 		optionsBox.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
 		ComboBox<String> patternBox = new ComboBox<String>(FXCollections.observableArrayList(game.getPatternNames()));
 		patternBox.getSelectionModel().select("cell");
-		ComboBox<String> colorBox = new ComboBox<String>(FXCollections.observableArrayList(Cell.getColorRules()));
-//		colorBox.getSelectionModel().select(THE_DEFAULT);
+		ComboBox<Node> colorBox = new ComboBox<Node>(FXCollections.observableArrayList(Cell.getColorRules()));
+		colorBox.getSelectionModel().select(Cell.getDefaultColorRule());
 		GridPane sliderPane = new GridPane();
 		zoomSlider = new Slider();
 		zoomSlider.setMin(minScale);
