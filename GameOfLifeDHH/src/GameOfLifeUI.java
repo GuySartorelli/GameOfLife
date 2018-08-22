@@ -404,7 +404,9 @@ public class GameOfLifeUI extends Application {
 	}
 
 	private class Factory implements Callback<ListView<Map.Entry<String,Paint[]>>, ListCell<Map.Entry<String,Paint[]>>>{
-		@Override public ListCell<Map.Entry<String,Paint[]>> call(ListView<Map.Entry<String,Paint[]>> p) {
+		
+		@Override 
+		public ListCell<Map.Entry<String,Paint[]>> call(ListView<Map.Entry<String,Paint[]>> p) {
 			return new ListCell<Map.Entry<String,Paint[]>>() {
 				private final HBox box;
 				{ 
