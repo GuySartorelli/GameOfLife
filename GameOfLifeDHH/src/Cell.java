@@ -136,7 +136,7 @@ public class Cell extends Rectangle {
 //			ColorPicker custom = new Colorpicker();
 //			colourRuleCustom(ColorPicker custom);
 		} else {
-			System.out.println("No colours selected.");
+			//System.out.println("No colours selected.");
 		}
 	}
 
