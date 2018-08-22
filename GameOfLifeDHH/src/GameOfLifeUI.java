@@ -169,7 +169,7 @@ public class GameOfLifeUI extends Application {
 		playButton.setOnAction(this::doPlay);
 	
 		//nextGenButton.setOnAction(this::doPause);
-		rotateButton.setOnAction(this::doStop);
+		rotateButton.setOnAction(this::doRestart);
 		
 		toggleBackGroundButton.setOnAction(this::doBlackAndWhite);
 		
@@ -306,9 +306,10 @@ public class GameOfLifeUI extends Application {
 		}
 	}	
 
-	public void doStop(ActionEvent act) {
-		timeline.stop();
-		System.exit(0);
+	public void doRestart(ActionEvent act) {
+		displayBuffer.getChildren().clear();
+		game.getCurrentBuffer().clear();
+		timeline.stop();		
 	}
 
 	public static void main(String[] args) {
