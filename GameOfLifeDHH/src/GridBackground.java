@@ -32,6 +32,7 @@ public class GridBackground extends Parent {
 		while (x < width) {
 			//set linewidth if needed
 			Line line = new Line(x, -height, x, height);
+			line.setStroke(Color.GREY);
 			if (!adjustLineWidthToScale) {
 				line.setStrokeWidth(lineWidth / scale);
 			} else {
@@ -45,6 +46,7 @@ public class GridBackground extends Parent {
 		double y = -cellSize + dy;
 		while (y < height) {
 			Line line = new Line(-width, y, width, y);
+			line.setStroke(Color.GREY);
 			if (!adjustLineWidthToScale) {
 				line.setStrokeWidth(lineWidth / scale);
 			} else {

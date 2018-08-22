@@ -1,5 +1,6 @@
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.animation.Animation;
 import javafx.application.Application;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -15,6 +16,8 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -35,17 +38,39 @@ import javafx.util.Duration;
  */
 
 public class GameOfLifeUI extends Application {
-	private int width = 500, height = 500;
+	private int width = 700, height = 500;
 	private int padding = 5;
 	
 	private BorderPane layout = new BorderPane();
 	private Scene scene = new Scene(layout, width, height);
 	private Timeline timeline = new Timeline();
-	private Button playButton = new Button("\u25B6");
-	private Button pauseButton = new Button("\u23F8");
-	private Button stopButton = new Button("\u23F9");
-	private Button backGround = new Button("b/w");//toggles the background between black and white
 	
+	private HBox optionsBox = new HBox();
+	
+	// play /pause button and image fields
+	private Button playButton = new Button();
+	private Image playIcon = new Image(getClass().getResourceAsStream("play.png"));
+	private Image pauseIcon = new Image(getClass().getResourceAsStream("pause.png"));
+	private ImageView playView = new ImageView(playIcon);	
+	private ImageView pauseView = new ImageView(pauseIcon);		
+	
+	// next generation button and image fields
+	private Image nextGen = new Image(getClass().getResourceAsStream("forwards.png"));
+	private ImageView nextGenView = new ImageView(nextGen);	
+	private Button nextGenButton = new Button();
+	
+	//rotation button and image fields
+	private Image rotate = new Image(getClass().getResourceAsStream("rotate.png"));
+	private ImageView rotateView = new ImageView(rotate);
+	private Button rotateButton = new Button();
+	
+	// Black and white button
+	private Image bw = new Image(getClass().getResourceAsStream("contrast.png"));
+	private ImageView contrastView = new ImageView(bw);	
+	private Button toggleBackGroundButton = new Button();//toggles the background between black and white
+	
+	// String for toggling between background white and background black
+	private String backgroundColour = "WHITE"; 
 
 	private int cellSize = 20;
 	private double minScale = 0.5; 
@@ -55,6 +80,10 @@ public class GameOfLifeUI extends Application {
 	private Group scaleOffset = new Group(displayBuffer, grid);
 	
 	private Slider zoomSlider;
+	private Slider speedSlider;
+	private Label zoomLabel = new Label("zoom");
+	private Label speedLabel = new Label("speed");	
+	
 	private ColorPicker colorPicker = new ColorPicker();
 
 	@Override
@@ -93,22 +122,46 @@ public class GameOfLifeUI extends Application {
 		layout.getChildren().add(scaleOffset);
 
 		playButton.setStyle(
-				"-fx-font: 15 arial; -fx-base: #353535;-fx-text-fill: white; -fx-pref-width: 28px; -fx-pref-height: 28px;");
-		pauseButton.setStyle(
-				"-fx-font: 12 arial; -fx-base: #353535;-fx-text-fill: white; -fx-pref-width: 28px; -fx-pref-height: 28px;");
-		stopButton.setStyle(
+				"-fx-base: #353535;-fx-text-fill: white; -fx-pref-width: 28px; -fx-pref-height: 28px;");
+		nextGenButton.setStyle(
+				"-fx-font: 8 arial; -fx-base: #353535;-fx-text-fill: white; -fx-pref-width: 28px; -fx-pref-height: 28px;");
+		rotateButton.setStyle(
 				"-fx-font: 10 arial; -fx-base: #353535;-fx-text-fill: white; -fx-pref-width: 28px; -fx-pref-height: 28px;");
-		backGround.setStyle(
+		toggleBackGroundButton.setStyle(
 				"-fx-font: 9 arial; -fx-base: #353535;-fx-text-fill: white; -fx-pref-width: 28px; -fx-pref-height: 28px;");
 		
+		//play button
+		playButton.setGraphic(playView);
+		playView.setFitHeight(10);
+		playView.setFitWidth(10);
+		pauseView.setFitHeight(10);
+		pauseView.setFitWidth(10);		
+		
+		//rotate button
+		rotateView.setFitHeight(13);
+		rotateView.setFitWidth(13);
+		rotateButton.setGraphic(rotateView);
+		
+		//next gen button
+		nextGenView.setFitHeight(10);
+		nextGenView.setFitWidth(10);
+		nextGenButton.setGraphic(nextGenView);		
+		
+		//contrast button
+		contrastView.setFitHeight(10);
+		contrastView.setFitWidth(10);
+		toggleBackGroundButton.setGraphic(contrastView);				
+
 		playButton.setOnAction(this::doPlay);
-		pauseButton.setOnAction(this::doPause);
-		stopButton.setOnAction(this::doStop);
+	
+		//nextGenButton.setOnAction(this::doPause);
+		rotateButton.setOnAction(this::doStop);
+		
+		toggleBackGroundButton.setOnAction(this::doBlackAndWhite);
 		
 		//BOTTOM LAYOUT
 		//_____________
-		HBox optionsBox = new HBox();
-		optionsBox.setAlignment(Pos.CENTER);
+		optionsBox.setAlignment(Pos.CENTER_LEFT);
 		optionsBox.setSpacing(padding);
 		optionsBox.setPadding(new Insets(padding, padding, padding, padding));
 		optionsBox.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
@@ -123,18 +176,19 @@ public class GameOfLifeUI extends Application {
 		zoomSlider.setMajorTickUnit(minScale);
 		zoomSlider.setMinorTickCount(0);
 //		zoomSlider.setBlockIncrement(minScale);
-		zoomSlider.setShowTickLabels(true);
+		//zoomSlider.setShowTickLabels(true);
 //		zoomSlider.setShowTickMarks(true);
 		zoomSlider.setValue(1);
 		zoomSlider.valueProperty().addListener(this::doZoom);
-		Label zoomLabel = new Label("zoom");
-		Slider speedSlider = new Slider();
-		Label speedLabel = new Label("speed");
+
+		speedSlider = new Slider();
+
 		sliderPane.addColumn(0, zoomSlider, zoomLabel);
 		sliderPane.addColumn(1, speedSlider, speedLabel);
 		GridPane.setHalignment(zoomLabel, HPos.CENTER);
 		GridPane.setHalignment(speedLabel, HPos.CENTER);
-		optionsBox.getChildren().addAll(patternBox, colorBox, sliderPane, playButton, pauseButton, stopButton);
+		optionsBox.getChildren().addAll(patternBox, colorBox, sliderPane, nextGenButton, rotateButton, toggleBackGroundButton, playButton);
+		
 		layout.setBottom(optionsBox);
 		
 		
@@ -185,13 +239,37 @@ public class GameOfLifeUI extends Application {
 		}
 	}
 
-	public void doPlay(ActionEvent act) {
-		timeline.play();
+	/**
+	 * Play/ Pause Toggle Button
+	 * switches image to pause when playing and playing when paused 
+	 * @param act
+	 * Action Event
+	 */
+	private void doPlay(ActionEvent act){
+		if (timeline.getStatus() == Animation.Status.RUNNING) {
+			timeline.pause();
+			playButton.setGraphic(playView);
+		} else {
+			timeline.play();
+			playButton.setGraphic(pauseView);
+		}
 	}
-
-	public void doPause(ActionEvent act) {
-		timeline.pause();
-	}
+	
+	private void doBlackAndWhite(ActionEvent act){
+		if (backgroundColour.equals("WHITE")) {
+			backgroundColour = "BLACK";
+			layout.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
+			optionsBox.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
+			zoomLabel.setTextFill(Color.WHITE);
+			speedLabel.setTextFill(Color.WHITE);
+		} else {
+			backgroundColour = "WHITE";
+			layout.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
+			optionsBox.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
+			zoomLabel.setTextFill(Color.BLACK);
+			speedLabel.setTextFill(Color.BLACK);
+		}
+	}	
 
 	public void doStop(ActionEvent act) {
 		timeline.stop();
