@@ -1,5 +1,9 @@
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import javafx.animation.Animation;
 import javafx.application.Application;
 import javafx.beans.value.ObservableValue;
@@ -15,7 +19,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -29,8 +36,12 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import javafx.util.Duration;
+import javafx.util.StringConverter;
 
 /**
  * CONWAYS GAME OF LIFE
@@ -86,7 +97,7 @@ public class GameOfLifeUI extends Application {
 	private Label speedLabel = new Label("speed");	
 	private Label patternLabel = new Label("patterns");	
 	private Label colourLabel = new Label("colours");	
-	
+
 	private ColorPicker colorPicker = new ColorPicker();
 
 	@Override
@@ -175,8 +186,16 @@ public class GameOfLifeUI extends Application {
 		patternBox.getSelectionModel().select("cell");
 		
 		GridPane colourPane = new GridPane(); //colours grid
-		ComboBox<Node> colorBox = new ComboBox<Node>(FXCollections.observableArrayList(Cell.getColorRules()));
-		colorBox.getSelectionModel().select(Cell.getDefaultColorRule());
+
+		ComboBox<Map.Entry<String,Paint[]>> colorBox = new ComboBox<Map.Entry<String,Paint[]>>();
+		for (Map.Entry<String, Paint[]> entry : Cell.getColorRules().entrySet()) {
+			colorBox.getItems().add(entry);
+		}
+
+		colorBox.setCellFactory(new Factory());
+		colorBox.setConverter(new Convertor());
+
+
 		
 		
 		GridPane sliderPane = new GridPane();
@@ -320,24 +339,51 @@ public class GameOfLifeUI extends Application {
 			}
 		}
 	}
-	
-	/**
-	 * Adding a ColorPicker for the colourRuleSolid(ColorPicker colorPicker) method under cell.
-	 * @author shawbeva
-	 *
-	 */
-//	public class ColorPickerSample extends Application {    
-//	   
-//	    @Override
-//	    public void start(Stage stage) {
-//	      
-//	        colorPicker.setOnAction(new EventHandler() {
-//	            public void handle(Event t) {
-//	                  
-//	            }
-//	        });
-//	 
-//	        //box.getChildren().addAll(colorPicker);
-//	    }
-//	}
+
+	private class Convertor extends StringConverter<Map.Entry<String, Paint[]>>{
+
+		@Override
+		public Map.Entry<String, Paint[]> fromString(String arg0) {
+			Map<String, Paint[]> d = new HashMap<String, Paint[]>();
+			d.put("TEST", new Paint[] {Color.RED});
+			for (Map.Entry<String, Paint[]> d1 : d.entrySet()) {
+				return d1;
+			}
+			return null;
+		}
+
+		@Override
+		public String toString(Map.Entry<String, Paint[]> object) {
+			return object.getKey();
+		}
+
+	}
+
+	private class Factory implements Callback<ListView<Map.Entry<String,Paint[]>>, ListCell<Map.Entry<String,Paint[]>>>{
+		@Override public ListCell<Map.Entry<String,Paint[]>> call(ListView<Map.Entry<String,Paint[]>> p) {
+			return new ListCell<Map.Entry<String,Paint[]>>() {
+				private final HBox box;
+				{ 
+					setContentDisplay(ContentDisplay.LEFT); 
+					box = new HBox(5);
+				}
+
+				@Override protected void updateItem(Map.Entry<String,Paint[]> item, boolean empty) {
+					super.updateItem(item, empty);
+
+					if (item == null || empty) {
+						setGraphic(null);
+						setText(null);
+					} else {
+						for (Paint p : item.getValue()){
+							Rectangle r = new Rectangle(15,15,p);
+							box.getChildren().add(r);
+						}
+						setGraphic(box);
+						setText(item.getKey());
+					}
+				}
+			};
+		}
+	}
 }
