@@ -5,6 +5,12 @@ import javafx.scene.Parent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
+
+/**
+ * This Class contains the instructions for creating the grid on which the game takes place.
+ * @author Dirglehurbleherb
+ *
+ */
 public class GridBackground extends Parent {
 	private int cellSize;
 	private double dx;

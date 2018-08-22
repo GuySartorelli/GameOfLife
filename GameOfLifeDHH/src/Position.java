@@ -1,6 +1,6 @@
 /**
  * Class holds a Cell position as an object. 
- * @author saadheba
+ * @author Dirglehurbleherb
  *
  */
 public class Position {

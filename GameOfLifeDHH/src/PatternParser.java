@@ -23,8 +23,8 @@ import java.util.Set;
  * @author Dirglehurbleherb
  */
 public class PatternParser {
-	Map<String, List<int[]>> contents = new HashMap<String, List<int[]>>();
-	Scanner scan;
+	private Map<String, List<int[]>> contents = new HashMap<String, List<int[]>>();
+	private Scanner scan;
 	
 	/**
 	 * @param String filePath; path of a file to parse
