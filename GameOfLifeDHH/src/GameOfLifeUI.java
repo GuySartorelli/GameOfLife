@@ -9,6 +9,7 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
@@ -37,7 +38,7 @@ import javafx.util.Duration;
 public class GameOfLifeUI extends Application {
 	private int width = 500, height = 500;
 	private int padding = 5;
-	
+
 	private BorderPane layout = new BorderPane();
 	private Scene scene = new Scene(layout, width, height);
 	private Timeline timeline = new Timeline();
@@ -45,7 +46,7 @@ public class GameOfLifeUI extends Application {
 	private Button pauseButton = new Button("\u23F8");
 	private Button stopButton = new Button("\u23F9");
 	private Button backGround = new Button("b/w");//toggles the background between black and white
-	
+
 
 	private int cellSize = 20;
 	private double minScale = 0.5; 
@@ -53,13 +54,13 @@ public class GameOfLifeUI extends Application {
 	private Game game = new Game(cellSize);
 	private GridBackground grid = new GridBackground(cellSize, minScale);
 	private Group scaleOffset = new Group(displayBuffer, grid);
-	
+
 	private Slider zoomSlider;
 	private ColorPicker colorPicker = new ColorPicker();
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		
+
 		//TIMELINE
 		//________________
 		KeyFrame frame = new KeyFrame(Duration.millis(100), new EventHandler<ActionEvent>() {
@@ -74,7 +75,7 @@ public class GameOfLifeUI extends Application {
 		timeline.setCycleCount(Timeline.INDEFINITE);
 		timeline.getKeyFrames().add(frame);
 		//timeline.setAutoReverse(true);//what does this do?
-		
+
 		//SCROLLING
 		//____________________
 		MouseDragger dragger = new MouseDragger();
@@ -83,11 +84,7 @@ public class GameOfLifeUI extends Application {
 		scene.setOnScroll(this::doMouseScroll);
 		scene.setOnKeyPressed(this::doKeyPress);
 
-		//COLORPICKER
-		//____________________
-	
-		
-		
+
 		//LAYOUT
 		//____________________
 		layout.getChildren().add(scaleOffset);
@@ -100,11 +97,11 @@ public class GameOfLifeUI extends Application {
 				"-fx-font: 10 arial; -fx-base: #353535;-fx-text-fill: white; -fx-pref-width: 28px; -fx-pref-height: 28px;");
 		backGround.setStyle(
 				"-fx-font: 9 arial; -fx-base: #353535;-fx-text-fill: white; -fx-pref-width: 28px; -fx-pref-height: 28px;");
-		
+
 		playButton.setOnAction(this::doPlay);
 		pauseButton.setOnAction(this::doPause);
 		stopButton.setOnAction(this::doStop);
-		
+
 		//BOTTOM LAYOUT
 		//_____________
 		HBox optionsBox = new HBox();
@@ -114,17 +111,17 @@ public class GameOfLifeUI extends Application {
 		optionsBox.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
 		ComboBox<String> patternBox = new ComboBox<String>(FXCollections.observableArrayList(game.getPatternNames()));
 		patternBox.getSelectionModel().select("cell");
-		ComboBox<String> colorBox = new ComboBox<String>(FXCollections.observableArrayList(Cell.getColorRules()));
-//		colorBox.getSelectionModel().select(THE_DEFAULT);
+		ComboBox<Node> colorBox = new ComboBox<Node>();
+		//		colorBox.getSelectionModel().select(THE_DEFAULT);
 		GridPane sliderPane = new GridPane();
 		zoomSlider = new Slider();
 		zoomSlider.setMin(minScale);
 		zoomSlider.setMax(3);
 		zoomSlider.setMajorTickUnit(minScale);
 		zoomSlider.setMinorTickCount(0);
-//		zoomSlider.setBlockIncrement(minScale);
+		//		zoomSlider.setBlockIncrement(minScale);
 		zoomSlider.setShowTickLabels(true);
-//		zoomSlider.setShowTickMarks(true);
+		//		zoomSlider.setShowTickMarks(true);
 		zoomSlider.setValue(1);
 		zoomSlider.valueProperty().addListener(this::doZoom);
 		Label zoomLabel = new Label("zoom");
@@ -136,7 +133,10 @@ public class GameOfLifeUI extends Application {
 		GridPane.setHalignment(speedLabel, HPos.CENTER);
 		optionsBox.getChildren().addAll(patternBox, colorBox, sliderPane, playButton, pauseButton, stopButton);
 		layout.setBottom(optionsBox);
-		
+
+		//COLORPICKER
+		//____________________
+		colorBox.setItems(FXCollections.observableArrayList(new ColorOptions("Lifespan",Color.RED, Color.BLUE)));
 		
 		displayBuffer.getChildren().addAll(game.getCurrentBuffer());
 		scrollGame(width*0.5, height*0.5);
@@ -148,7 +148,7 @@ public class GameOfLifeUI extends Application {
 		primaryStage.show();
 		grid.construct(); //must be after stage is shown
 	}
-	
+
 	public void doZoom(ObservableValue<? extends Number> ov, Number oldVal, Number newVal) {
 		double scaleVal = Math.round(newVal.doubleValue() * 2.0) * 0.5;
 		scaleVal = newVal.doubleValue();
@@ -157,19 +157,19 @@ public class GameOfLifeUI extends Application {
 		grid.scale(scaleVal);
 		//zoomSlider.setValue(scaleVal);
 	}
-	
+
 	public void scrollGame(double dx, double dy) {
 		displayBuffer.setTranslateX(displayBuffer.getTranslateX() + dx);
 		displayBuffer.setTranslateY(displayBuffer.getTranslateY() + dy);
 		grid.scroll(dx, dy);
 	}
-	
+
 	public void doMouseScroll(ScrollEvent event) {
 		double dx = event.getDeltaX();
 		double dy = event.getDeltaY();
 		scrollGame(dx, dy);
 	}
-	
+
 	public void doKeyPress(KeyEvent event) {
 		if (event.getCode() == KeyCode.DOWN) {
 			scrollGame(0, -20);
@@ -202,7 +202,7 @@ public class GameOfLifeUI extends Application {
 		launch();
 	}
 
-	
+
 	/**
 	 * Handles mouse dragging for infinite scrolling
 	 */
@@ -226,24 +226,24 @@ public class GameOfLifeUI extends Application {
 			}
 		}
 	}
-	
+
 	/**
 	 * Adding a ColorPicker for the colourRuleSolid(ColorPicker colorPicker) method under cell.
 	 * @author shawbeva
 	 *
 	 */
-//	public class ColorPickerSample extends Application {    
-//	   
-//	    @Override
-//	    public void start(Stage stage) {
-//	      
-//	        colorPicker.setOnAction(new EventHandler() {
-//	            public void handle(Event t) {
-//	                  
-//	            }
-//	        });
-//	 
-//	        //box.getChildren().addAll(colorPicker);
-//	    }
-//	}
+	//	public class ColorPickerSample extends Application {    
+	//	   
+	//	    @Override
+	//	    public void start(Stage stage) {
+	//	      
+	//	        colorPicker.setOnAction(new EventHandler() {
+	//	            public void handle(Event t) {
+	//	                  
+	//	            }
+	//	        });
+	//	 
+	//	        //box.getChildren().addAll(colorPicker);
+	//	    }
+	//	}
 }
