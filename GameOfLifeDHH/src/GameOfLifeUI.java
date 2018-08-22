@@ -36,9 +36,14 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
@@ -86,6 +91,9 @@ public class GameOfLifeUI extends Application {
 	
 	// String for toggling between background white and background black
 	private String backgroundColour = "WHITE"; 
+	
+	//For generation count
+	private Text genText = new Text("Gen: 0");
 
 	private int cellSize = 20;
 	private double minScale = 0.1; 
@@ -114,6 +122,7 @@ public class GameOfLifeUI extends Application {
 		KeyFrame frame = new KeyFrame(Duration.millis(100), new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
+				doGen();
 				game.update();
 				displayBuffer.getChildren().clear();
 				displayBuffer.getChildren().addAll(game.getCurrentBuffer());
@@ -136,7 +145,7 @@ public class GameOfLifeUI extends Application {
 		//COLORPICKER
 		//____________________
 	
-		
+
 		
 		//LAYOUT
 		//____________________
@@ -179,6 +188,23 @@ public class GameOfLifeUI extends Application {
 		rotateButton.setOnAction(this::doRestart);
 		
 		toggleBackGroundButton.setOnAction(this::doBlackAndWhite);
+		
+		
+		/**
+		 * Generation and Lifespan statistics
+		 */
+		HBox statBox = new HBox();
+		statBox.setAlignment(Pos.CENTER_RIGHT);
+		statBox.setSpacing(padding);
+		statBox.setPadding(new Insets(padding, padding, padding, padding));
+		statBox.getChildren().addAll(genText);
+		statBox.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, null, null)));
+		genText.setFill(Color.RED);
+		//genText.setTextAlignment(TextAlignment.JUSTIFY);
+		genText.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+
+		layout.setTop(statBox);		
+				
 		
 		//BOTTOM LAYOUT
 		//_____________
@@ -312,10 +338,23 @@ public class GameOfLifeUI extends Application {
 
 	public void doRestart(ActionEvent act) {
 		displayBuffer.getChildren().clear();
+		genText.setText("Gen: 0");
 		timeline.stop();	
 		game.restart();
 		resetTranslation();
 	}
+	
+	/**
+	 * Method to count the generation of the cell in the top-left 
+	 * of the screen by using the subString method and change the int into String.
+	 */
+	public void doGen() {
+		String generation = genText.getText().substring(5);
+		int gen = Integer.parseInt(generation);
+		gen++;
+		genText.setText("Gen: " + gen);
+		//System.out.println(gen);
+	}	
 	
 	private void resetTranslation() {
 		scrollGame(-displayBuffer.getTranslateX(), -displayBuffer.getTranslateY());
