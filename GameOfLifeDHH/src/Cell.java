@@ -117,7 +117,6 @@ public class Cell extends Rectangle {
 		//colourRuleNumNeighbours();
 		//colourRuleRandom();
 	}
-
 	/**
 	 * Returns a list of all color options for use in a dropbox
 	 * @return List<ColorOption> list of all rules
