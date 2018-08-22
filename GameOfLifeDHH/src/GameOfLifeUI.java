@@ -313,8 +313,12 @@ public class GameOfLifeUI extends Application {
 		displayBuffer.getChildren().clear();
 		timeline.stop();	
 		game.restart();
-
-
+		resetTranslation();
+	}
+	
+	private void resetTranslation() {
+		scrollGame(-displayBuffer.getTranslateX(), -displayBuffer.getTranslateY());
+		scrollGame(scene.getWidth()*0.5, scene.getHeight()*0.5);
 	}
 
 	public static void main(String[] args) {
