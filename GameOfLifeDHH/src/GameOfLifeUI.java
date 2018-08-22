@@ -84,6 +84,8 @@ public class GameOfLifeUI extends Application {
 	private Slider speedSlider;
 	private Label zoomLabel = new Label("zoom");
 	private Label speedLabel = new Label("speed");	
+	private Label patternLabel = new Label("patterns");	
+	private Label colourLabel = new Label("colours");	
 	
 	private ColorPicker colorPicker = new ColorPicker();
 
@@ -165,12 +167,20 @@ public class GameOfLifeUI extends Application {
 		optionsBox.setAlignment(Pos.CENTER_LEFT);
 		optionsBox.setSpacing(padding);
 		optionsBox.setPadding(new Insets(padding, padding, padding, padding));
+		
+		
+		GridPane patternPane = new GridPane(); //patterns grid
 		optionsBox.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
 		ComboBox<String> patternBox = new ComboBox<String>(FXCollections.observableArrayList(game.getPatternNames()));
 		patternBox.getSelectionModel().select("cell");
+		
+		GridPane colourPane = new GridPane(); //colours grid
 		ComboBox<Node> colorBox = new ComboBox<Node>(FXCollections.observableArrayList(Cell.getColorRules()));
 		colorBox.getSelectionModel().select(Cell.getDefaultColorRule());
+		
+		
 		GridPane sliderPane = new GridPane();
+		
 		zoomSlider = new Slider();
 		zoomSlider.setMin(minScale);
 		zoomSlider.setMax(3);
@@ -184,11 +194,16 @@ public class GameOfLifeUI extends Application {
 
 		speedSlider = new Slider();
 
-		sliderPane.addColumn(0, zoomSlider, zoomLabel);
-		sliderPane.addColumn(1, speedSlider, speedLabel);
+		patternPane.addColumn(0, patternLabel, patternBox);
+		colourPane.addColumn(1, colourLabel, colorBox);		
+		sliderPane.addColumn(2, zoomLabel, zoomSlider);
+		sliderPane.addColumn(3, speedLabel, speedSlider);
+
 		GridPane.setHalignment(zoomLabel, HPos.CENTER);
 		GridPane.setHalignment(speedLabel, HPos.CENTER);
-		optionsBox.getChildren().addAll(patternBox, colorBox, sliderPane, nextGenButton, rotateButton, toggleBackGroundButton, playButton);
+		GridPane.setHalignment(patternLabel, HPos.CENTER);
+		GridPane.setHalignment(colourLabel, HPos.CENTER);
+		optionsBox.getChildren().addAll(patternPane, colourPane, sliderPane, nextGenButton, rotateButton, toggleBackGroundButton, playButton);
 		
 		layout.setBottom(optionsBox);
 		
