@@ -39,6 +39,7 @@ public class Cell extends Rectangle {
 		setStroke(Color.WHITE);
 		setStrokeType(StrokeType.INSIDE);
 		setStrokeWidth(cellSize*0.05);
+		this.setFill(custom);
 	}
 
 	public void colourRuleLifespan() {
@@ -117,6 +118,7 @@ public class Cell extends Rectangle {
 		//colourRuleNumNeighbours();
 		//colourRuleRandom();
 	}
+	
 	/**
 	 * Returns a list of all color options for use in a dropbox
 	 * @return List<ColorOption> list of all rules
