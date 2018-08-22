@@ -17,6 +17,7 @@ public class Cell extends Rectangle {
 
 	/**
 	 * Constructor for the cell class
+	 * @param game the Game object the cell has a reference to.
 	 * @param cellSize the width and height of the cell
 	 * @param x for x pos
 	 * @param y for y pos

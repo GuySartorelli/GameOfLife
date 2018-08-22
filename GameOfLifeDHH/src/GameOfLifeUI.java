@@ -1,3 +1,5 @@
+import java.util.List;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -49,8 +51,8 @@ public class GameOfLifeUI extends Application {
 	private Button pauseButton = new Button("\u23F8");
 	private Button stopButton = new Button("\u23F9");
 	private Button backGround = new Button("b/w");//toggles the background between black and white
+	private ComboBox<String> patternBox = new ComboBox<String>();
 	
-
 	private int cellSize = 20;
 	private Group displayBuffer = new Group();
 	private Game game = new Game(cellSize);
@@ -59,6 +61,7 @@ public class GameOfLifeUI extends Application {
 	
 	private Slider zoomSlider;
 	private ColorPicker colorPicker = new ColorPicker();
+	
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -80,9 +83,10 @@ public class GameOfLifeUI extends Application {
 		
 		//SCROLLING
 		//____________________
-		MouseDragger dragger = new MouseDragger();
-		scene.setOnMousePressed(dragger);
-		scene.setOnMouseDragged(dragger);
+		MouseListener listener = new MouseListener();
+		scene.setOnMousePressed(listener);
+		scene.setOnMouseDragged(listener);
+		scene.setOnMouseMoved(listener);
 		scene.setOnScroll(this::doMouseScroll);
 		scene.setOnKeyPressed(this::doKeyPress);
 
@@ -115,7 +119,7 @@ public class GameOfLifeUI extends Application {
 		optionsBox.setSpacing(padding);
 		optionsBox.setPadding(new Insets(padding, padding, padding, padding));
 		optionsBox.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
-		ComboBox<String> patternBox = new ComboBox<String>(FXCollections.observableArrayList(game.getPatternNames()));
+		patternBox.setItems(FXCollections.observableArrayList(game.getPatternNames()));
 		patternBox.getSelectionModel().select("cell");
 		ComboBox<String> colorBox = new ComboBox<String>(FXCollections.observableArrayList(Cell.getColorRules()));
 //		colorBox.getSelectionModel().select(THE_DEFAULT);
@@ -210,24 +214,58 @@ public class GameOfLifeUI extends Application {
 	/**
 	 * Handles mouse dragging for infinite scrolling
 	 */
-	private class MouseDragger implements EventHandler<MouseEvent>{
+	private class MouseListener implements EventHandler<MouseEvent>{
 		private double prevX;
 		private double prevY;
-
+		
 		@Override
 		public void handle(MouseEvent event) {
-			double x = event.getX();
-			double y = event.getY();
+			double x = event.getX()-displayBuffer.getTranslateX();
+			double y = event.getY()-displayBuffer.getTranslateY();
+			double snapX = Math.round(x/cellSize) * cellSize;
+			double snapY = Math.round(y/cellSize) * cellSize;
 			if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {
+				System.out.println("mouse pressed");
 				prevX = x;
 				prevY = y;
-			} else if (event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
+						
+				game.createPattern(patternBox.getValue(),snapX,snapY);
+				displayBuffer.getChildren().clear();
+				displayBuffer.getChildren().addAll(game.getCurrentBuffer());	
+			}
+			
+			else if (event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
 				double dx = prevX - x;
 				double dy = prevY - y;
 				scrollGame(dx, dy);
 				prevX = x;
 				prevY = y;
 			}
+			/* Method for tracking the mouse with an outline of the pattern about to be placed,
+			   and then once clicked add the pattern to the view*/
+			if (event.getEventType() == MouseEvent.MOUSE_MOVED) {
+				
+				displayBuffer.getChildren().clear();
+				displayBuffer.getChildren().addAll(game.getCurrentBuffer());
+				createTemporaryPattern(patternBox.getValue(),snapX,snapY);
+			}
+		}
+	}
+	
+	/** Creates temporary cell that follows the mouse*/
+	public void createTemporaryCell(double x, double y) {
+		Cell cell = new Cell(game, cellSize, x, y);
+		displayBuffer.getChildren().add(cell);
+	}
+	
+	/** Creates temporary cell pattern that follows the mouse*/
+	public void createTemporaryPattern(String patternKey,double mouseX,double mouseY) {
+
+		List<int[]> pattern = game.returnPattern(patternKey);
+		for (int[] position : pattern) {
+			double x = mouseX + position[0]*cellSize;
+			double y = mouseY + position[1]*cellSize;
+			createTemporaryCell(x,y);
 		}
 	}
 	

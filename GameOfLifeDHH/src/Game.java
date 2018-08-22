@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Class to for creating Game object.
@@ -16,6 +17,8 @@ import java.util.Set;
 public class Game {
 	private Map<Position, Cell> currentBuffer = new HashMap<Position, Cell>();
 	private Map<Position, Cell> backBuffer = new HashMap<Position, Cell>();
+	//private TreeMap<Position, Cell> backBuffer = new TreeMap<Position, Cell>();
+
 	private int cellSize;
 	private Map<String, List<int[]>> patterns;
 
@@ -27,7 +30,7 @@ public class Game {
 	public Game(int cellSize) {
 		this.cellSize = cellSize;
 		parsePatterns();
-		defineInitialPattern();
+		//defineInitialPattern(); Used to place selected pattern before placing pattern funcionality.
 		
 		//Test getDeadNeighbours method.
 		getDeadNeighbours(100,100);
@@ -36,10 +39,6 @@ public class Game {
 	/** Getter for currentBuffer */
 	public Collection<Cell> getCurrentBuffer() {
 
-		//		System.out.println("getting current buffer");
-		for (Position cell: currentBuffer.keySet()) {
-			//			System.out.println(currentBuffer.get(cell));
-		}
 		return currentBuffer.values();
 	}
 
@@ -213,22 +212,29 @@ public class Game {
 		backBuffer.put(new Position(x,y), cell);
 	}
 	
+	/** Places cells in a defined pattern. Adds it to the lastPatternAdded field*/
+	public void createPattern(String patternKey,double mouseX,double mouseY) {
+		System.out.println("creating permanent pattern");
+		
+		List<int[]> pattern = patterns.get(patternKey);
+		for (int[] position : pattern) {
+			double x = mouseX + position[0]*cellSize;
+			double y = mouseY + position[1]*cellSize;
+
+			//createCell(x,y);
+			Cell cell = new Cell(this, cellSize, x, y);
+			currentBuffer.put(new Position(x,y), cell);
+		}
+	}
+	
+	public List<int[]> returnPattern(String patternKey) {
+		return patterns.get(patternKey);
+	}
+	
 	/** places cells randomly
 	 * possibly replaced later with specific patterns */
 	public void placeRandom() {
 		
-	}
-	
-	/** places cells with defined initial patterns */
-	public void defineInitialPattern() {
-		//NOTE: Decide whether it should be random or not
-		int patternIndex = (int)(Math.random() * patterns.size());
-		List<int[]> pattern = patterns.get("acorn");//(List<int[]>) patterns.values().toArray()[patternIndex];
-		for (int[] position : pattern) {
-			double x = position[0]*cellSize;
-			double y = position[1]*cellSize;
-			createCell(x, y);
-		}
 	}
 	
 	/** Takes pattern templates from file and parse them to map
