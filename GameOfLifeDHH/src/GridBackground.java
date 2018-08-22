@@ -18,7 +18,7 @@ public class GridBackground extends Parent {
 	private double minScale;
 	private double scale = 1;
 	private double lineWidth = 1;
-	private boolean adjustLineWidthToScale = false;
+	private boolean adjustLineWidthToScale = true;
 	
 	public GridBackground(int cellSize, double minScale) {
 		super();

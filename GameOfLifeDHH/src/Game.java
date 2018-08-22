@@ -9,7 +9,7 @@ import java.util.Set;
 
 /**
  * Class to for creating Game object.
- * @author shawbeva
+ * @author DirgleHurbleHerb
  *
  */
 

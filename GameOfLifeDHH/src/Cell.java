@@ -13,7 +13,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 /**
  * Class to store info about the cell object and extends Rectangle
- * @author saadheba
+ * @author DirgleHurbleHerb
  *
  */
 public class Cell extends Rectangle {
