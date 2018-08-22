@@ -341,7 +341,6 @@ public class GameOfLifeUI extends Application {
 			double snapX = Math.round(x/cellSize) * cellSize;
 			double snapY = Math.round(y/cellSize) * cellSize;
 			if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {
-				System.out.println("mouse pressed");
 				prevX = x;
 				prevY = y;
 						
