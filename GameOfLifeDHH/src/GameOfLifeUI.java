@@ -43,6 +43,7 @@ import javafx.util.Callback;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 
+
 /**
  * CONWAYS GAME OF LIFE
  * 
@@ -50,6 +51,7 @@ import javafx.util.StringConverter;
  */
 
 public class GameOfLifeUI extends Application {
+	
 	private int width = 700, height = 500;
 	private int padding = 5;
 	
@@ -316,6 +318,8 @@ public class GameOfLifeUI extends Application {
 	}
 
 	
+
+
 	/**
 	 * Handles mouse dragging for infinite scrolling
 	 */
@@ -338,7 +342,7 @@ public class GameOfLifeUI extends Application {
 				prevY = y;
 			}
 		}
-	}
+}
 
 	private class Convertor extends StringConverter<Map.Entry<String, Paint[]>>{
 
