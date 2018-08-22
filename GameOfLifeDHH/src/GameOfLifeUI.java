@@ -48,7 +48,7 @@ import javafx.util.StringConverter;
 /**
  * CONWAYS GAME OF LIFE
  * 
- * @author dirglehurbleherb
+ * @author DirgleHurbleHerb
  */
 
 public class GameOfLifeUI extends Application {
@@ -88,7 +88,8 @@ public class GameOfLifeUI extends Application {
 	private String backgroundColour = "WHITE"; 
 
 	private int cellSize = 20;
-	private double minScale = 0.5; 
+	private double minScale = 0.1; 
+	private double scale = 1;
 	private Group displayBuffer = new Group();
 	private Game game = new Game(cellSize);
 	private GridBackground grid = new GridBackground(cellSize, minScale);
@@ -197,13 +198,8 @@ public class GameOfLifeUI extends Application {
 		for (Map.Entry<String, Paint[]> entry : Cell.getColorRules().entrySet()) {
 			colorBox.getItems().add(entry);
 		}
-
 		colorBox.setCellFactory(new Factory());
 		colorBox.setConverter(new Convertor());
-
-
-		
-		
 		GridPane sliderPane = new GridPane();
 		
 		zoomSlider = new Slider();
@@ -212,7 +208,7 @@ public class GameOfLifeUI extends Application {
 		zoomSlider.setMajorTickUnit(minScale);
 		zoomSlider.setMinorTickCount(0);
 //		zoomSlider.setBlockIncrement(minScale);
-		//zoomSlider.setShowTickLabels(true);
+//		zoomSlider.setShowTickLabels(true);
 //		zoomSlider.setShowTickMarks(true);
 		zoomSlider.setValue(1);
 		zoomSlider.valueProperty().addListener(this::doZoom);
@@ -250,6 +246,7 @@ public class GameOfLifeUI extends Application {
 		scaleOffset.setScaleX(scaleVal);
 		scaleOffset.setScaleY(scaleVal);
 		grid.scale(scaleVal);
+		scale = scaleVal;
 		//zoomSlider.setValue(scaleVal);
 	}
 	
@@ -336,14 +333,13 @@ public class GameOfLifeUI extends Application {
 		
 		@Override
 		public void handle(MouseEvent event) {
-			double x = event.getX()-displayBuffer.getTranslateX();
-			double y = event.getY()-displayBuffer.getTranslateY();
-			double snapX = Math.round(x/cellSize) * cellSize;
-			double snapY = Math.round(y/cellSize) * cellSize;
+			double offsetX = (event.getX()/scale-displayBuffer.getTranslateX());
+			double offsetY = (event.getY()/scale-displayBuffer.getTranslateY());
+			double snapX = Math.round(offsetX/cellSize) * cellSize;
+			double snapY = Math.round(offsetY/cellSize) * cellSize;
 			if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {
-				System.out.println("mouse pressed");
-				prevX = x;
-				prevY = y;
+				prevX = offsetX;
+				prevY = offsetY;
 						
 				game.createPattern(patternBox.getValue(),snapX,snapY);
 				displayBuffer.getChildren().clear();
@@ -351,11 +347,11 @@ public class GameOfLifeUI extends Application {
 			}
 			
 			else if (event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
-				double dx = prevX - x;
-				double dy = prevY - y;
+				double dx = prevX - offsetX;
+				double dy = prevY - offsetY;
 				scrollGame(dx, dy);
-				prevX = x;
-				prevY = y;
+				prevX = offsetX;
+				prevY = offsetY;
 			}
 			/* Method for tracking the mouse with an outline of the pattern about to be placed,
 			   and then once clicked add the pattern to the view*/

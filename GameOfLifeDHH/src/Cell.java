@@ -13,7 +13,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 /**
  * Class to store info about the cell object and extends Rectangle
- * @author saadheba
+ * @author DirgleHurbleHerb
  *
  */
 public class Cell extends Rectangle {
@@ -45,7 +45,6 @@ public class Cell extends Rectangle {
 
 	public void colourRuleLifespan() {
 		int neighbours = this.game.getNumNeighbours(this.getTranslateX(),this.getTranslateY());
-		System.out.println(getTranslateX() + " " + getTranslateY() + " "  + lifespan + " " + neighbours);
 
 		if(lifespan == 1) {
 			this.setFill(Color.YELLOW); //Made from green 1.0 and red 1.0, (blue is 0.0).
