@@ -212,7 +212,6 @@ public class Game {
 	/** Places cells in a defined pattern. Adds it to the lastPatternAdded field*/
 	public void createPattern(String patternKey,double mouseX,double mouseY) {
 		
-		
 		List<int[]> pattern = patterns.get(patternKey);
 		for (int[] position : pattern) {
 			double x = mouseX + position[0]*cellSize;
@@ -263,7 +262,6 @@ public class Game {
 	}
 	
 	public void restart() {
-		
 		swapBuffers();
 		defineInitialPattern();
 	}
