@@ -99,6 +99,16 @@ public class Cell extends Rectangle {
 			this.setFill(Color.DARKORANGE);
 		}else if (neighbours == 3){
 			this.setFill(Color.RED);
+		}if(neighbours == 4) {
+			this.setFill(Color.BROWN);
+		} else if (neighbours == 5) { 
+			this.setFill(Color.PURPLE);
+		}else if (neighbours == 6){
+			this.setFill(Color.BLUEVIOLET);
+		} else if (neighbours == 7) { 
+			this.setFill(Color.BLUE);
+		}else if (neighbours == 8){
+			this.setFill(Color.MAGENTA);
 		}
 	}
 
@@ -114,11 +124,22 @@ public class Cell extends Rectangle {
 	}
 	public void update() {
 		lifespan++;
+		String colorName = "";//from comboBox
 		colourRuleLifespan();
-		//colourRuleNumNeighbours();
-		//colourRuleRandom();
+		if(colorName.equals("Lifespan")) {
+			colourRuleLifespan();
+		}else if(colorName.equals("Random")) {
+			colourRuleRandom();
+		}else if(colorName.equals("Neighbours")) {
+			colourRuleNeighbours();
+		}else if(colorName.equals("Custom")) {
+//			ColorPicker custom = new Colorpicker();
+//			colourRuleCustom(ColorPicker custom);
+		} else {
+			System.out.println("No colours selected.");
+		}
 	}
-	
+
 	/**
 	 * Returns a list of all color options for use in a dropbox
 	 * @return List<ColorOption> list of all rules
@@ -130,13 +151,13 @@ public class Cell extends Rectangle {
 						new Stop(0.3,Color.CYAN), 
 						new Stop(0.5,Color.BLUE),
 						new Stop(0.7,Color.MAGENTA)),
-						Color.RED});//Color.YELLOW, Color.GREEN, Color.BLUE, Color.RED
+				Color.RED});//Color.YELLOW, Color.GREEN, Color.BLUE, Color.RED
 		colorRules.put("Neighbours",new Paint[] {Color.YELLOW, Color.ORANGE, Color.RED});
 		colorRules.put("Random", new Paint [] {new LinearGradient(0,0,1,1,true, CycleMethod.REPEAT,
-						new Stop(0.2,Color.GOLD),
-						new Stop(0.4,Color.FORESTGREEN),
-						new Stop(0.6,Color.DARKSALMON),
-						new Stop(0.8,Color.AQUAMARINE))});
+				new Stop(0.2,Color.GOLD),
+				new Stop(0.4,Color.FORESTGREEN),
+				new Stop(0.6,Color.DARKSALMON),
+				new Stop(0.8,Color.AQUAMARINE))});
 		colorRules.put("Custom",new Paint[] {custom});
 		//colorRules.add(defaultOption);
 		return colorRules;
