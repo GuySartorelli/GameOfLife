@@ -223,11 +223,12 @@ public class Game {
 	public void defineInitialPattern() {
 		//NOTE: Decide whether it should be random or not
 		int patternIndex = (int)(Math.random() * patterns.size());
-		List<int[]> pattern = patterns.get("snacker");//(List<int[]>) patterns.values().toArray()[patternIndex];
+		List<int[]> pattern = /*patterns.get("snacker");*/(List<int[]>) patterns.values().toArray()[patternIndex];
 		for (int[] position : pattern) {
 			double x = position[0]*cellSize;
 			double y = position[1]*cellSize;
 			createCell(x, y);
+			//swapBuffers();
 		}
 	}
 	
@@ -243,6 +244,11 @@ public class Game {
 	
 	public Set<String> getPatternNames(){
 		return patterns.keySet();
+	}
+	
+	public void restart() {
+		swapBuffers();
+		defineInitialPattern();
 	}
 	
 }

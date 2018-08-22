@@ -308,8 +308,10 @@ public class GameOfLifeUI extends Application {
 
 	public void doRestart(ActionEvent act) {
 		displayBuffer.getChildren().clear();
-		game.getCurrentBuffer().clear();
-		timeline.stop();		
+		timeline.stop();	
+		game.restart();
+		
+		
 	}
 
 	public static void main(String[] args) {
