@@ -1,8 +1,11 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javafx.scene.control.ColorPicker;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 /**
@@ -113,13 +116,12 @@ public class Cell extends Rectangle {
 	 * Returns a list of all color options for use in a dropbox
 	 * @return List<ColorOption> list of all rules
 	 */
-	public static List<ColorOption> getColorRules() {
-		List<ColorOption> colorRules = new ArrayList<ColorOption>();
-		//colorRules.add(new ColorOption("Solid"));
-		colorRules.add(new ColorOption("NumNeighbours",Color.YELLOW, Color.ORANGE, Color.RED));
-		colorRules.add(new ColorOption("Random",Color.RED, Color.BLUE));
-		colorRules.add(defaultOption);
-		
+	public static Map<String,Paint[]> getColorRules() {
+		Map<String,Paint[]> colorRules = new HashMap<String,Paint[]>();
+		colorRules.put("Lifespan",new Paint[] {Color.YELLOW, Color.GREEN, Color.BLUE, Color.RED});
+		colorRules.put("NumNeighbours",new Paint[] {Color.YELLOW, Color.ORANGE, Color.RED});
+		//colorRules.put("Random",Color.RED, Color.BLUE));
+		//colorRules.add(defaultOption);
 		return colorRules;
 	}
 	
