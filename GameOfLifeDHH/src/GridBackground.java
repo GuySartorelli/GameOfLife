@@ -36,7 +36,7 @@ public class GridBackground extends Parent {
 		double width = stage.getWidth() / minScale;
 		double height = stage.getHeight() / minScale;
 		//Vertical lines
-		double x = -width + dx;
+		double x = -cellSize + dx;
 		while (x < width) {
 			//set linewidth if needed
 			Line line = new Line(x, -height, x, height);
@@ -51,7 +51,7 @@ public class GridBackground extends Parent {
 			x+= cellSize;
 		}
 		//Horizontal lines
-		double y = -height + dy;
+		double y = -cellSize + dy;
 		while (y < height) {
 			Line line = new Line(-width, y, width, y);
 			line.setStroke(Color.GREY);
