@@ -35,14 +35,12 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
@@ -261,14 +259,13 @@ public class GameOfLifeUI extends Application {
 		
 		
 		displayBuffer.getChildren().addAll(game.getCurrentBuffer());
-		scrollGame(width*0.5, height*0.5);
 
 		primaryStage.widthProperty().addListener((obs, oldVal, newVal) -> grid.construct());
 		primaryStage.heightProperty().addListener((obs, oldVal, newVal) -> grid.construct());
 		primaryStage.setTitle("Conway's Game of Life");
 		primaryStage.setScene(scene);
 		primaryStage.show();
-		grid.construct(); //must be after stage is shown
+		scrollGame(width*0.5, height*0.5);//must be after stage is shown
 	}
 	
 	public void setSpeed(ObservableValue<? extends Number> ov, Number oldVal, Number newVal) {

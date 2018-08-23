@@ -4,6 +4,7 @@ import java.util.List;
 import javafx.scene.Parent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.stage.Stage;
 
 
 /**
@@ -30,11 +31,12 @@ public class GridBackground extends Parent {
 	 * Constructs the grid based on cellSize and scene dimensions
 	 */
 	public void construct() {
+		Stage stage = (Stage)getScene().getWindow();
 		List<Line> buffer = new ArrayList<Line>();
-		double width = getScene().getWidth() / minScale;
-		double height = getScene().getHeight() / minScale;
+		double width = stage.getWidth() / minScale;
+		double height = stage.getHeight() / minScale;
 		//Vertical lines
-		double x = -cellSize + dx;
+		double x = -width + dx;
 		while (x < width) {
 			//set linewidth if needed
 			Line line = new Line(x, -height, x, height);
@@ -49,7 +51,7 @@ public class GridBackground extends Parent {
 			x+= cellSize;
 		}
 		//Horizontal lines
-		double y = -cellSize + dy;
+		double y = -height + dy;
 		while (y < height) {
 			Line line = new Line(-width, y, width, y);
 			line.setStroke(Color.GREY);
