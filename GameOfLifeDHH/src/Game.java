@@ -243,8 +243,8 @@ public class Game {
 			double x = position[0]*cellSize;
 			double y = position[1]*cellSize;
 			createCell(x, y);
-			//swapBuffers();
 		}
+		swapBuffers();
 	}
 	
 	/** Takes pattern templates from file and parse them to map

@@ -123,8 +123,7 @@ public class GameOfLifeUI extends Application {
 			public void handle(ActionEvent arg0) {
 				doGen();
 				game.update();
-				displayBuffer.getChildren().clear();
-				displayBuffer.getChildren().addAll(game.getCurrentBuffer());
+				refreshBuffer();
 			}
 		});
 
@@ -276,6 +275,11 @@ public class GameOfLifeUI extends Application {
 		timeline.setRate(newVal.doubleValue());
 	}
 	
+	public void refreshBuffer() {
+		displayBuffer.getChildren().clear();
+		displayBuffer.getChildren().addAll(game.getCurrentBuffer());
+	}
+	
 	public void doZoom(ObservableValue<? extends Number> ov, Number oldVal, Number newVal) {
 		double scaleVal = Math.round(newVal.doubleValue() * 2.0) * 0.5;
 		scaleVal = newVal.doubleValue();
@@ -346,11 +350,11 @@ public class GameOfLifeUI extends Application {
 	}	
 
 	public void doRestart(ActionEvent act) {
-		displayBuffer.getChildren().clear();
 		genText.setText("Gen: 0");
 		timeline.stop();	
 		game.restart();
 		resetTranslation();
+		refreshBuffer();
 	}
 	
 	/**
@@ -392,8 +396,7 @@ public class GameOfLifeUI extends Application {
 				prevY = offsetY;
 
 				game.createPattern(patternBox.getValue(),snapX,snapY);
-				displayBuffer.getChildren().clear();
-				displayBuffer.getChildren().addAll(game.getCurrentBuffer());	
+				refreshBuffer();	
 			}
 
 			else if (event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
@@ -407,8 +410,7 @@ public class GameOfLifeUI extends Application {
 			   and then once clicked add the pattern to the view*/
 			if (event.getEventType() == MouseEvent.MOUSE_MOVED) {
 
-				displayBuffer.getChildren().clear();
-				displayBuffer.getChildren().addAll(game.getCurrentBuffer());
+				refreshBuffer();
 				createTemporaryPattern(patternBox.getValue(),snapX,snapY);
 			}
 		}
