@@ -209,21 +209,85 @@ public class Game {
 		backBuffer.put(new Position(x,y), cell);
 	}
 	
+	public int[] findPatternDimensions(String patternName) {
+		int width = 0;
+		int height = 0;
+		for (int[] pos : patterns.get(patternName)) {
+			if (pos[0] > width) {
+				width = pos[0];
+			}
+			if (pos[1] > height) {
+				height = pos[1];
+			}
+		}
+		return new int[] {width, height};
+	}
+	
+	public List<int[]> rotatePattern(String patternName, int rotation){
+		List<int[]> rotatedPattern = new ArrayList<int[]>();
+		int[] patternDimensions = findPatternDimensions(patternName);
+		switch (rotation){
+		case 90:
+			//x=y, y=-x+w
+			for (int[] pos : patterns.get(patternName)) {
+				int[] rotatedPos = new int[2];
+				rotatedPos[0] = pos[1];
+				rotatedPos[1] = -pos[0] + patternDimensions[0];
+				rotatedPattern.add(rotatedPos);
+			}
+			break;
+		case 180:
+			//x=y, y=x
+			for (int[] pos : patterns.get(patternName)) {
+				int[] rotatedPos = new int[2];
+				rotatedPos[0] = -pos[0] + patternDimensions[0];
+				rotatedPos[1] = -pos[1] + patternDimensions[1];
+				rotatedPattern.add(rotatedPos);
+			}
+			break;
+		case 270:
+			//x=-y+h, y=x
+			for (int[] pos : patterns.get(patternName)) {
+				int[] rotatedPos = new int[2];
+				rotatedPos[0] = -pos[1] + patternDimensions[1];
+				rotatedPos[1] = pos[0];
+				rotatedPattern.add(rotatedPos);
+			}
+			break;
+		default:
+			rotatedPattern = patterns.get(patternName);
+		}
+		return rotatedPattern;
+	}
+	
 	/** Places cells in a defined pattern. Adds it to the lastPatternAdded field*/
-	public void createPattern(String patternKey,double mouseX,double mouseY) {
-		
-		List<int[]> pattern = patterns.get(patternKey);
+	public List<Cell> placePattern(String patternKey,double mouseX,double mouseY, int patternRotation) {
+		List<Cell> placedCells = new ArrayList<Cell>();
+		List<int[]> pattern = rotatePattern(patternKey, patternRotation);
 		for (int[] position : pattern) {
 			double x = mouseX + position[0]*cellSize;
 			double y = mouseY + position[1]*cellSize;
-
-			//createCell(x,y);
-			Cell cell = new Cell(this, cellSize, x, y);
-			currentBuffer.put(new Position(x,y), cell);
+			Position pos = new Position(x, y);
+			
+			if (currentBuffer.get(pos) == null) {
+				Cell cell = new Cell(this, cellSize, x, y);
+				currentBuffer.put(new Position(x,y), cell);
+				placedCells.add(cell);
+			}
+		}
+		return placedCells;
+	}
+	
+	/**
+	 * Removes a list of cells from the current buffer
+	 */
+	public void removeCells(List<Cell> cells) {
+		for (Cell cell : cells) {
+			currentBuffer.remove(cell.getPos());
 		}
 	}
 	
-	public List<int[]> returnPattern(String patternKey) {
+	public List<int[]> getPattern(String patternKey) {
 		return patterns.get(patternKey);
 	}
 	
@@ -236,8 +300,10 @@ public class Game {
 
 	/** places cells with defined initial patterns */
 	public void defineInitialPattern() {
-		//NOTE: Decide whether it should be random or not
-		int patternIndex = (int)(Math.random() * patterns.size());
+		int patternIndex;
+		do {
+			patternIndex = (int)(Math.random() * patterns.size());
+		} while (new ArrayList<String>(patterns.keySet()).get(patternIndex).equalsIgnoreCase("cell")); // do not allow "cell" as initial pattern
 		List<int[]> pattern = /*patterns.get("snacker");*/(List<int[]>) patterns.values().toArray()[patternIndex];
 		for (int[] position : pattern) {
 			double x = position[0]*cellSize;

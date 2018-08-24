@@ -31,40 +31,42 @@ public class GridBackground extends Parent {
 	 * Constructs the grid based on cellSize and scene dimensions
 	 */
 	public void construct() {
+		//prepare
 		Stage stage = (Stage)getScene().getWindow();
 		List<Line> buffer = new ArrayList<Line>();
 		double width = stage.getWidth() / minScale;
 		double height = stage.getHeight() / minScale;
-		//Vertical lines
-		double x = -cellSize + dx;
-		while (x < width) {
-			//set linewidth if needed
-			Line line = new Line(x, -height, x, height);
-			line.setStroke(Color.GREY);
-			if (!adjustLineWidthToScale) {
-				line.setStrokeWidth(lineWidth / scale);
-			} else {
-				line.setStrokeWidth(lineWidth);
-			}
-			
-			buffer.add(line);
-			x+= cellSize;
-		}
-		//Horizontal lines
-		double y = -cellSize + dy;
-		while (y < height) {
-			Line line = new Line(-width, y, width, y);
-			line.setStroke(Color.GREY);
-			if (!adjustLineWidthToScale) {
-				line.setStrokeWidth(lineWidth / scale);
-			} else {
-				line.setStrokeWidth(lineWidth);
-			}
-			buffer.add(line);
-			y+= cellSize;
-		}
+		
+		//make lines
+		List<Line> vLines = constructLines(true, dx, width, height);
+		List<Line> hLines = constructLines(false, dy, height, width);
+		
+		//put lines on screen
 		getChildren().clear();
-		getChildren().addAll(buffer);
+		getChildren().addAll(vLines);
+		getChildren().addAll(hLines);//buffer
+	}
+	
+	private List<Line> constructLines(boolean vertical, double dPos, double dimension1, double dimension2) {
+		List<Line> lines = new ArrayList<Line>();
+		double pos = dPos - cellSize;
+		while (pos < dimension1) {
+			Line line;
+			if (vertical) {
+				line = new Line(pos, -dimension2, pos, dimension2);
+			} else {
+				line = new Line(-dimension2, pos, dimension2, pos);
+			}
+			line.setStroke(Color.GREY);
+			if (!adjustLineWidthToScale) {
+				line.setStrokeWidth(lineWidth / scale);
+			} else {
+				line.setStrokeWidth(lineWidth);
+			}
+			lines.add(line);
+			pos+= cellSize;
+		}
+		return lines;
 	}
 	
 	/** 

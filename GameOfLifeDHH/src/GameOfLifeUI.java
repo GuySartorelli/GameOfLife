@@ -1,17 +1,18 @@
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.animation.Animation;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -37,6 +38,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
@@ -56,6 +58,8 @@ import javafx.util.StringConverter;
  */
 
 public class GameOfLifeUI extends Application {
+	private Bounds initialBounds1;
+	private Bounds initialBounds2;
 
 	private int width = 700, height = 500;
 	private int padding = 5;
@@ -80,19 +84,23 @@ public class GameOfLifeUI extends Application {
 
 	//rotation button and image fields
 	private Image rotate = new Image(getClass().getResourceAsStream("rotate.png"));
-	private ImageView rotateView = new ImageView(rotate);
-	private Button rotateButton = new Button();
+	private ImageView restartView = new ImageView(rotate);
+	private Button restartButton = new Button();
 
 	// Black and white button
 	private Image bw = new Image(getClass().getResourceAsStream("contrast.png"));
 	private ImageView contrastView = new ImageView(bw);	
 	private Button toggleBackGroundButton = new Button();//toggles the background between black and white
 
+	//rotation button and image fields
+	private Button rotateButton = new Button("0°");
+
 	// String for toggling between background white and background black
 	private String backgroundColour = "WHITE"; 
 
 	//For generation count
-	private Text genText = new Text("Gen: 0");
+	private Text genText = new Text("Gen: -1");
+	private Text cellsText = new Text();
 
 	private int cellSize = 20;
 	private double minScale = 0.1; 
@@ -107,33 +115,28 @@ public class GameOfLifeUI extends Application {
 	private Label zoomLabel = new Label("zoom");
 	private Label speedLabel = new Label("speed");	
 	private Label patternLabel = new Label("patterns");	
-	private Label colorLabel = new Label("colours");	
+	private Label colorLabel = new Label("colour rules");	
 	HBox colorLabelBox = new HBox(5,colorLabel);
 
-	private ColorPicker colorPicker = new ColorPicker();
 	private ComboBox<String> patternBox = new ComboBox<String>();
 	private ComboBox<Map.Entry<String,Paint[]>> colorBox = new ComboBox<Map.Entry<String,Paint[]>>();
+	private CellFactory cellFactory = new CellFactory();
+	private int patternRotation = 0;
 
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-
 		//TIMELINE
 		//________________
 		KeyFrame frame = new KeyFrame(Duration.millis(100), new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent arg0) {
-				doGen();
-
-				game.update();
-				refreshBuffer();
-
+				update();
 			}
 		});
 
 		timeline.setCycleCount(Timeline.INDEFINITE);
 		timeline.getKeyFrames().add(frame);
-		//timeline.setAutoReverse(true);//what does this do?
 
 		//SCROLLING
 		//____________________
@@ -144,11 +147,6 @@ public class GameOfLifeUI extends Application {
 		scene.setOnScroll(this::doMouseScroll);
 		scene.setOnKeyPressed(this::doKeyPress);
 
-		//COLORPICKER
-		//____________________
-
-
-
 		//LAYOUT
 		//____________________
 		layout.getChildren().add(scaleOffset);
@@ -157,53 +155,60 @@ public class GameOfLifeUI extends Application {
 				"-fx-base: #353535;-fx-text-fill: white; -fx-pref-width: 28px; -fx-pref-height: 28px;");
 		nextGenButton.setStyle(
 				"-fx-font: 8 arial; -fx-base: #353535;-fx-text-fill: white; -fx-pref-width: 28px; -fx-pref-height: 28px;");
-		rotateButton.setStyle(
+		restartButton.setStyle(
 				"-fx-font: 10 arial; -fx-base: #353535;-fx-text-fill: white; -fx-pref-width: 28px; -fx-pref-height: 28px;");
 		toggleBackGroundButton.setStyle(
 				"-fx-font: 9 arial; -fx-base: #353535;-fx-text-fill: white; -fx-pref-width: 28px; -fx-pref-height: 28px;");
 
 		//play button
 		playButton.setGraphic(playView);
+		playButton.setFocusTraversable(false);
 		playView.setFitHeight(10);
 		playView.setFitWidth(10);
 		pauseView.setFitHeight(10);
-		pauseView.setFitWidth(10);		
-
-		//rotate button
-		rotateView.setFitHeight(13);
-		rotateView.setFitWidth(13);
-		rotateButton.setGraphic(rotateView);
+		pauseView.setFitWidth(10);
+		playButton.setOnAction(this::doPlay);
+		playButton.setFocusTraversable(false);
+		
+		//restart button
+		restartView.setFitHeight(13);
+		restartView.setFitWidth(13);
+		restartButton.setGraphic(restartView);
+		restartButton.setOnAction(this::doRestart);
+		restartButton.setFocusTraversable(false);
 
 		//next gen button
 		nextGenView.setFitHeight(10);
 		nextGenView.setFitWidth(10);
-		nextGenButton.setGraphic(nextGenView);		
+		nextGenButton.setGraphic(nextGenView);
+		nextGenButton.setFocusTraversable(false);
+		nextGenButton.setOnAction(this::nextGen);
 
 		//contrast button
 		contrastView.setFitHeight(10);
 		contrastView.setFitWidth(10);
-		toggleBackGroundButton.setGraphic(contrastView);				
-
-		playButton.setOnAction(this::doPlay);
-
-		//nextGenButton.setOnAction(this::doPause);
-		rotateButton.setOnAction(this::doRestart);
-
+		toggleBackGroundButton.setGraphic(contrastView);
+		toggleBackGroundButton.setFocusTraversable(false);
 		toggleBackGroundButton.setOnAction(this::doBlackAndWhite);
-
+		
+		//rotate button
+		rotateButton.setOnAction(this::toggleRotation);
+		rotateButton.setMinWidth(50);
 
 		/**
 		 * Generation and Lifespan statistics
 		 */
-		HBox statBox = new HBox();
+		VBox statBox = new VBox();
 		statBox.setAlignment(Pos.CENTER_RIGHT);
 		statBox.setSpacing(padding);
 		statBox.setPadding(new Insets(padding, padding, padding, padding));
-		statBox.getChildren().addAll(genText);
+		statBox.getChildren().addAll(genText, cellsText);
 		statBox.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, null, null)));
 		genText.setFill(Color.RED);
+		cellsText.setFill(Color.RED);
 		//genText.setTextAlignment(TextAlignment.JUSTIFY);
 		genText.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+		cellsText.setFont(Font.font("Arial", FontWeight.BOLD, 14));
 
 		layout.setTop(statBox);		
 
@@ -213,56 +218,62 @@ public class GameOfLifeUI extends Application {
 		optionsBox.setAlignment(Pos.CENTER_LEFT);
 		optionsBox.setSpacing(padding);
 		optionsBox.setPadding(new Insets(padding, padding, padding, padding));
+		optionsBox.getChildren().add(rotateButton);
 
 
 		GridPane patternPane = new GridPane(); //patterns grid
 		optionsBox.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
 		patternBox.setItems(FXCollections.observableArrayList(game.getPatternNames()));
 		patternBox.getSelectionModel().select("cell");
+		patternBox.setFocusTraversable(false);
 
 		GridPane colourPane = new GridPane(); //colours grid
-
 
 		for (Map.Entry<String, Paint[]> entry : Cell.getColorRules().entrySet()) {
 			colorBox.getItems().add(entry);
 		}
 
-		colorBox.setCellFactory(new Factory());
+		colorBox.setCellFactory(cellFactory);
 		colorBox.setConverter(new Convertor());
 		colorBox.getSelectionModel().selectFirst();
-		colorBox.getSelectionModel().selectedItemProperty().addListener(this::updateColors);
+		colorBox.getSelectionModel().selectedItemProperty().addListener(this::updateLabelColors);
+		colorBox.setFocusTraversable(false);
 		colorLabelBox.setAlignment(Pos.CENTER);
 
 		ColorPicker colorPicker = new ColorPicker(Cell.getCustom());
 		colorLabelBox.getChildren().add(colorPicker);
 		colorPicker.setOnAction(new EventHandler<ActionEvent>() {
-
 			@Override
 			public void handle(ActionEvent event) {
-				Cell.setCustom(colorPicker.getValue());
-				updateCellColors();
+				updateCustomColor(colorPicker);
 			}
-			
 		});
+		colorPicker.setFocusTraversable(false);
+		colorPicker.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, null, null)));
+		colorPicker.setStyle("-fx-color-label-visible: false ;");
+		colorPicker.setMaxHeight(15);
+		
 		GridPane sliderPane = new GridPane();
 
 		zoomSlider = new Slider();
 		zoomSlider.setMin(minScale);
 		zoomSlider.setMax(3);
-		zoomSlider.setMajorTickUnit(minScale);
-		zoomSlider.setMinorTickCount(0);
+		zoomSlider.setValue(1);
+		//zoomSlider.setMajorTickUnit(minScale);
+		//zoomSlider.setMinorTickCount(0);
 		//zoomSlider.setBlockIncrement(minScale);
 		//zoomSlider.setShowTickLabels(true);
 		//zoomSlider.setShowTickMarks(true);
-		zoomSlider.setValue(1);
 		zoomSlider.valueProperty().addListener(this::doZoom);
+		zoomSlider.setFocusTraversable(false);
 
 		speedSlider = new Slider();
-		speedSlider.valueProperty().addListener(this::setSpeed);
 		speedSlider.setMin(0.1);
 		speedSlider.setMax(3);
 		speedSlider.setValue(1);
 		//speedSlider.setShowTickLabels(true);
+		speedSlider.valueProperty().addListener(this::setSpeed);
+		speedSlider.setFocusTraversable(false);
 		
 		patternPane.addColumn(0, patternLabel, patternBox);
 		colourPane.addColumn(1, colorLabelBox, colorBox);		
@@ -273,10 +284,9 @@ public class GameOfLifeUI extends Application {
 		GridPane.setHalignment(speedLabel, HPos.CENTER);
 		GridPane.setHalignment(patternLabel, HPos.CENTER);
 		GridPane.setHalignment(colorLabel, HPos.CENTER);
-		optionsBox.getChildren().addAll(patternPane, colourPane, sliderPane, nextGenButton, rotateButton, toggleBackGroundButton, playButton);
+		optionsBox.getChildren().addAll(patternPane, colourPane, sliderPane, nextGenButton, restartButton, toggleBackGroundButton, playButton);
 
 		layout.setBottom(optionsBox);
-
 
 		displayBuffer.getChildren().addAll(game.getCurrentBuffer());
 
@@ -286,9 +296,52 @@ public class GameOfLifeUI extends Application {
 		primaryStage.setScene(scene);
 		primaryStage.show();
 		scrollGame(width*0.5, height*0.5);//must be after stage is shown
+		updateStats();
+		Bounds scaleBounds = scaleOffset.getBoundsInLocal();
+		initialBounds1 = new BoundingBox(scaleBounds.getMinX(), scaleBounds.getMinY(), scaleBounds.getWidth(), scaleBounds.getHeight());//DEBUG
+		initialBounds2 = new BoundingBox(scaleBounds.getMinX(), scaleBounds.getMinY(), scaleBounds.getWidth(), scaleBounds.getHeight());
+	}
+
+	private void nextGen(ActionEvent act){
+		update();
+	}
+	
+	/**
+	 * An attempt to fix the issue where cells going outside the scaleOffset's bounds causes translation issues
+	 * It now blinks away for a frame and back for a frame, which is an improvement.
+	 */
+	private void offsetByBoundsDelta() {
+		Bounds scaleBounds = scaleOffset.getBoundsInLocal();
+		double deltaX=0;
+		double deltaY=0;
+		String generation = genText.getText().substring(5);
+		int gen = Integer.parseInt(generation);
+		if (gen % 2 != 0) {
+			deltaX = initialBounds1.getMinX() - scaleBounds.getMinX();
+			deltaY = initialBounds1.getMinY() - scaleBounds.getMinY();
+			initialBounds2 = new BoundingBox(scaleBounds.getMinX(), scaleBounds.getMinY(), scaleBounds.getWidth(), scaleBounds.getHeight());
+		} else {
+			deltaX = initialBounds2.getMinX() - scaleBounds.getMinX();
+			deltaY = initialBounds2.getMinY() - scaleBounds.getMinY();
+			initialBounds1 = new BoundingBox(scaleBounds.getMinX(), scaleBounds.getMinY(), scaleBounds.getWidth(), scaleBounds.getHeight());
+		}
+		if (deltaX != 0 || deltaY != 0) {
+			displayBuffer.setTranslateX(displayBuffer.getTranslateX() + deltaX);
+			displayBuffer.setTranslateY(displayBuffer.getTranslateY() + deltaY);
+			//scrollGame(deltaX, deltaY);
+			//grid.scroll(-deltaX, -deltaY);
+		}
+	}
+	
+	public void update() {
+		updateStats();
+		game.update();
+		refreshBuffer();
+		offsetByBoundsDelta();
 	}
 
 	public void setSpeed(ObservableValue<? extends Number> ov, Number oldVal, Number newVal) {
+		layout.requestFocus();
 		timeline.setRate(newVal.doubleValue());
 	}
 
@@ -298,6 +351,7 @@ public class GameOfLifeUI extends Application {
 	}
 
 	public void doZoom(ObservableValue<? extends Number> ov, Number oldVal, Number newVal) {
+		layout.requestFocus();
 		double scaleVal = Math.round(newVal.doubleValue() * 2.0) * 0.5;
 		scaleVal = newVal.doubleValue();
 		scaleOffset.setScaleX(scaleVal);
@@ -314,23 +368,23 @@ public class GameOfLifeUI extends Application {
 	}
 
 	public void doMouseScroll(ScrollEvent event) {
-		double dx = event.getDeltaX();
-		double dy = event.getDeltaY();
+		double dx = event.getDeltaX();// + cellSize*0.3;
+		double dy = event.getDeltaY();// + cellSize*0.3;
 		scrollGame(dx, dy);
 	}
 
 	public void doKeyPress(KeyEvent event) {
 		if (event.getCode() == KeyCode.DOWN) {
-			scrollGame(0, -20);
+			scrollGame(0, -20 - cellSize*0.3);
 		}
 		if (event.getCode() == KeyCode.UP) {
-			scrollGame(0, 20);
+			scrollGame(0, 20 + cellSize*0.3);
 		}
 		if (event.getCode() == KeyCode.LEFT) {
-			scrollGame(20, 0);
+			scrollGame(20 + cellSize*0.3, 0);
 		}
 		if (event.getCode() == KeyCode.RIGHT) {
-			scrollGame(-20, 0);
+			scrollGame(-20 - cellSize*0.3, 0);
 		}
 	}
 
@@ -350,7 +404,7 @@ public class GameOfLifeUI extends Application {
 		}
 	}
 
-	private void doBlackAndWhite(ActionEvent act){
+	private void doBlackAndWhite(ActionEvent act) {
 		if (backgroundColour.equals("WHITE")) {
 			backgroundColour = "BLACK";
 			layout.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
@@ -371,23 +425,31 @@ public class GameOfLifeUI extends Application {
 	}	
 
 	public void doRestart(ActionEvent act) {
-		genText.setText("Gen: 0");
-		timeline.stop();	
+		timeline.pause();
+		playButton.setGraphic(playView);
 		game.restart();
 		resetTranslation();
 		refreshBuffer();
+		genText.setText("Gen: -1");
+		updateStats();
+	}
+	
+	public void toggleRotation(ActionEvent act) {
+		patternRotation = (patternRotation + 90) % 360;
+		rotateButton.setText(patternRotation + "°");
 	}
 
 	/**
 	 * Method to count the generation of the cell in the top-left 
 	 * of the screen by using the subString method and change the int into String.
 	 */
-	public void doGen() {
+	public void updateStats() {
 		String generation = genText.getText().substring(5);
 		int gen = Integer.parseInt(generation);
 		gen++;
 		genText.setText("Gen: " + gen);
-		//System.out.println(gen);
+		int numCells = displayBuffer.getChildren().size();
+		cellsText.setText("Cells: " + numCells);
 	}	
 
 	private void resetTranslation() {
@@ -405,6 +467,8 @@ public class GameOfLifeUI extends Application {
 	private class MouseListener implements EventHandler<MouseEvent>{
 		private double prevX;
 		private double prevY;
+		private boolean isScrolling;
+		private List<Cell> placedPattern = new ArrayList<Cell>();
 
 		@Override
 		public void handle(MouseEvent event) {
@@ -413,26 +477,37 @@ public class GameOfLifeUI extends Application {
 			double snapX = Math.round(offsetX/cellSize) * cellSize;
 			double snapY = Math.round(offsetY/cellSize) * cellSize;
 			if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {
+				//scrolling
 				prevX = offsetX;
 				prevY = offsetY;
-
-				game.createPattern(patternBox.getValue(),snapX,snapY);
+				
+				//pattern placing
+				placedPattern.clear();
+				placedPattern.addAll(game.placePattern(patternBox.getValue(),snapX,snapY, patternRotation));
 				refreshBuffer();	
 			}
 
 			else if (event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
-				double dx = prevX - offsetX;
-				double dy = prevY - offsetY;
+				//scrolling
+				isScrolling = true;
+				double dx = (prevX - offsetX) *0.7;
+				double dy = (prevY - offsetY) *0.7;
 				scrollGame(dx, dy);
 				prevX = offsetX;
 				prevY = offsetY;
+				
+				game.removeCells(placedPattern);
+				refreshBuffer();
+				isScrolling = false;
 			}
 			/* Method for tracking the mouse with an outline of the pattern about to be placed,
 			   and then once clicked add the pattern to the view*/
 			if (event.getEventType() == MouseEvent.MOUSE_MOVED) {
-
-				refreshBuffer();
-				createTemporaryPattern(patternBox.getValue(),snapX,snapY);
+				//pattern placing
+				if (!isScrolling) {
+					refreshBuffer();
+					createTemporaryPattern(patternBox.getValue(),snapX,snapY);
+				}
 			}
 		}
 
@@ -444,10 +519,17 @@ public class GameOfLifeUI extends Application {
 			cell.updateColor();
 		}
 	}
+	
+	private void updateCustomColor(ColorPicker colorPicker) {
+		Color newValue = colorPicker.getValue();
+		Cell.setCustom(newValue);
+		cellFactory.setCustomRectanglePaint(newValue);
+		updateCellColors();
+	}
 
-	public void updateColors(ObservableValue<? extends Map.Entry<String,Paint[]>> observable, Map.Entry<String,Paint[]> oldValue, Map.Entry<String,Paint[]> newValue) {
-
+	public void updateLabelColors(ObservableValue<? extends Map.Entry<String,Paint[]>> observable, Map.Entry<String,Paint[]> oldValue, Map.Entry<String,Paint[]> newValue) {
 		Cell.setColorName(newValue.getKey());
+		updateCellColors();
 				
 		colorLabelBox.getChildren().clear();
 		colorLabelBox.getChildren().add(colorLabel);
@@ -460,17 +542,17 @@ public class GameOfLifeUI extends Application {
 		}else {
 			ColorPicker colorPicker = new ColorPicker(Cell.getCustom());
 			colorLabelBox.getChildren().add(colorPicker);
+			colorPicker.setFocusTraversable(false);
+			colorPicker.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, null, null)));
+			colorPicker.setStyle("-fx-color-label-visible: false;");
+			colorPicker.setMaxHeight(15);
 			colorPicker.setOnAction(new EventHandler<ActionEvent>() {
-
 				@Override
 				public void handle(ActionEvent event) {
-					Cell.setCustom(colorPicker.getValue());
-					updateCellColors();
+					updateCustomColor(colorPicker);
 				}
-				
 			});
 		}
-		updateCellColors();
 	}
 
 	/** Creates temporary cell that follows the mouse*/
@@ -481,8 +563,7 @@ public class GameOfLifeUI extends Application {
 
 	/** Creates temporary cell pattern that follows the mouse*/
 	public void createTemporaryPattern(String patternKey,double mouseX,double mouseY) {
-
-		List<int[]> pattern = game.returnPattern(patternKey);
+		List<int[]> pattern = game.rotatePattern(patternKey, patternRotation);
 		for (int[] position : pattern) {
 			double x = mouseX + position[0]*cellSize;
 			double y = mouseY + position[1]*cellSize;
@@ -509,12 +590,13 @@ public class GameOfLifeUI extends Application {
 
 	}
 
-	private class Factory implements Callback<ListView<Map.Entry<String,Paint[]>>, ListCell<Map.Entry<String,Paint[]>>>{
+	private class CellFactory implements Callback<ListView<Map.Entry<String,Paint[]>>, ListCell<Map.Entry<String,Paint[]>>>{
+		private Rectangle customRectangle;
+		private HBox box;
 
 		@Override 
 		public ListCell<Map.Entry<String,Paint[]>> call(ListView<Map.Entry<String,Paint[]>> p) {
 			return new ListCell<Map.Entry<String,Paint[]>>() {
-				private final HBox box;
 				{ 
 					setContentDisplay(ContentDisplay.LEFT); 
 					box = new HBox(5);
@@ -528,15 +610,25 @@ public class GameOfLifeUI extends Application {
 						setGraphic(null);
 						setText(null);
 					} else {
-						for (Paint p : item.getValue()){
-							Rectangle r = new Rectangle(15,15,p);
-							box.getChildren().add(r);
+						if (item.getKey().equals("Custom")) {
+							Paint p = Cell.getCustom();
+							customRectangle = new Rectangle(15,15,p);
+							box.getChildren().add(customRectangle);
+						} else {
+							for (Paint p : item.getValue()){
+								Rectangle r = new Rectangle(15,15,p);
+								box.getChildren().add(r);
+							}
 						}
 						setGraphic(box);
 						setText(item.getKey());
 					}
 				}
 			};
+		}
+
+		public void setCustomRectanglePaint(Paint paint) {
+			customRectangle.setFill(paint);
 		}
 	}
 }

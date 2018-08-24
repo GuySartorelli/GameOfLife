@@ -25,9 +25,6 @@ public class Cell extends Rectangle {
 	private static Color custom = Color.DARKSALMON;
 	private static String colorName = "Custom";
 
-
-
-
 	/**
 	 * Constructor for the cell class
 	 * @param game the Game object the cell has a reference to.
@@ -168,6 +165,10 @@ public class Cell extends Rectangle {
 		colorRules.put("Custom",new Paint[] {custom});
 		//colorRules.add(defaultOption);
 		return colorRules;
+	}
+	
+	public Position getPos() {
+		return new Position(getTranslateX(), getTranslateY());
 	}
 
 	public static Color getCustom() {
