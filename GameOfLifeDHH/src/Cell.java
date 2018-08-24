@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javafx.scene.control.ColorPicker;
 import javafx.scene.paint.Color;
@@ -22,6 +23,8 @@ public class Cell extends Rectangle {
 	private int lifespan = 0;
 	private Game game;
 	private static Color custom = Color.DARKSALMON;
+	private static String colorName = "Custom";
+
 
 
 
@@ -46,7 +49,7 @@ public class Cell extends Rectangle {
 	public void colourRuleLifespan() {
 		int neighbours = this.game.getNumNeighbours(this.getTranslateX(),this.getTranslateY());
 
-		if(lifespan == 1) {
+		if(lifespan == 1 || lifespan == 0) {
 			this.setFill(Color.YELLOW); //Made from green 1.0 and red 1.0, (blue is 0.0).
 		} else if (neighbours == 2 || neighbours == 3) {
 			Color currentColour = (Color)getFill();
@@ -124,8 +127,13 @@ public class Cell extends Rectangle {
 	}
 	public void update() {
 		lifespan++;
-		String colorName = "";//from comboBox
-		colourRuleLifespan();
+		updateColor();
+
+	}
+
+	public void updateColor() {
+
+		//		colourRuleLifespan();
 		if(colorName.equals("Lifespan")) {
 			colourRuleLifespan();
 		}else if(colorName.equals("Random")) {
@@ -133,19 +141,18 @@ public class Cell extends Rectangle {
 		}else if(colorName.equals("Neighbours")) {
 			colourRuleNeighbours();
 		}else if(colorName.equals("Custom")) {
-//			ColorPicker custom = new Colorpicker();
-//			colourRuleCustom(ColorPicker custom);
+			this.setFill(custom);
 		} else {
-			//System.out.println("No colours selected.");
+			System.out.println("No colours selected.");
 		}
-	}
 
+	}
 	/**
 	 * Returns a list of all color options for use in a dropbox
 	 * @return List<ColorOption> list of all rules
 	 */
 	public static Map<String,Paint[]> getColorRules() {
-		Map<String,Paint[]> colorRules = new HashMap<String,Paint[]>();
+		Map<String,Paint[]> colorRules = new TreeMap<String,Paint[]>();
 		colorRules.put("Lifespan",new Paint[] {Color.YELLOW, 
 				new LinearGradient(0,0,1,1,true, CycleMethod.REPEAT,
 						new Stop(0.3,Color.CYAN), 
@@ -163,15 +170,15 @@ public class Cell extends Rectangle {
 		return colorRules;
 	}
 
-	/**
-	 * Returns a list of all color options for use in a dropbox
-	 * @return List<ColorOption> list of all rules
-	 */
-	//	public static ColorOption getDefaultColorRule() {
-	//		return defaultOption;
+	public static Color getCustom() {
+		return custom;
+	}
 
-	//	}
 	public static void setCustom(Color custom) {
 		Cell.custom = custom;
+	}
+
+	public static void setColorName(String colorName) {
+		Cell.colorName = colorName;
 	}
 }
