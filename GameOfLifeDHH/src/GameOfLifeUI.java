@@ -337,12 +337,16 @@ public class GameOfLifeUI extends Application {
 			optionsBox.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
 			zoomLabel.setTextFill(Color.WHITE);
 			speedLabel.setTextFill(Color.WHITE);
+			patternLabel.setTextFill(Color.WHITE);
+			colourLabel.setTextFill(Color.WHITE);
 		} else {
 			backgroundColour = "WHITE";
 			layout.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
 			optionsBox.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
 			zoomLabel.setTextFill(Color.BLACK);
 			speedLabel.setTextFill(Color.BLACK);
+			patternLabel.setTextFill(Color.BLACK);
+			colourLabel.setTextFill(Color.BLACK);
 		}
 	}	
 
