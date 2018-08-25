@@ -83,8 +83,8 @@ public class GameOfLifeUI extends Application {
 	private Button nextGenButton = new Button();
 
 	//rotation button and image fields
-	private Image rotate = new Image(getClass().getResourceAsStream("rotate.png"));
-	private ImageView restartView = new ImageView(rotate);
+	private Image restart = new Image(getClass().getResourceAsStream("rotate.png"));
+	private ImageView restartView = new ImageView(restart);
 	private Button restartButton = new Button();
 
 	// Black and white button
@@ -192,8 +192,11 @@ public class GameOfLifeUI extends Application {
 		toggleBackGroundButton.setOnAction(this::doBlackAndWhite);
 		
 		//rotate button
+		Label rotateLabel = new Label("rotate");
 		rotateButton.setOnAction(this::toggleRotation);
 		rotateButton.setMinWidth(50);
+		VBox rotateBox = new VBox(rotateLabel, rotateButton);
+		rotateBox.setAlignment(Pos.CENTER);
 
 		/**
 		 * Generation and Lifespan statistics
@@ -218,7 +221,7 @@ public class GameOfLifeUI extends Application {
 		optionsBox.setAlignment(Pos.CENTER_LEFT);
 		optionsBox.setSpacing(padding);
 		optionsBox.setPadding(new Insets(padding, padding, padding, padding));
-		optionsBox.getChildren().add(rotateButton);
+		optionsBox.getChildren().add(rotateBox);
 
 
 		GridPane patternPane = new GridPane(); //patterns grid
