@@ -93,7 +93,7 @@ public class GameOfLifeUI extends Application {
 	private Button toggleBackGroundButton = new Button();//toggles the background between black and white
 
 	//rotation button and image fields
-	private Button rotateButton = new Button("0°");
+	private Button rotateButton = new Button("0\u00B0");
 
 	// String for toggling between background white and background black
 	private String backgroundColour = "WHITE"; 
@@ -449,7 +449,7 @@ public class GameOfLifeUI extends Application {
 	 */	
 	public void toggleRotation(ActionEvent act) {
 		patternRotation = (patternRotation + 90) % 360;
-		rotateButton.setText(patternRotation + "°");
+		rotateButton.setText(patternRotation + "\u00B0");
 	}
 
 	/**
