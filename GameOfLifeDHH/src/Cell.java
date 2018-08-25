@@ -43,6 +43,12 @@ public class Cell extends Rectangle {
 		this.setFill(custom);
 	}
 
+	/**
+     *  Shows the logic of Conway’s Game of Life. Cells that are born appear yellow,
+     *  cells that will die in the next generation appear red
+     *  (unless they appear for only one generation in which case they are yellow). 
+     *  All other live cells slowly transition in colour until they eventually stabilise and become purple. 
+     */	
 	public void colourRuleLifespan() {
 		int neighbours = this.game.getNumNeighbours(this.getTranslateX(),this.getTranslateY());
 
@@ -89,6 +95,11 @@ public class Cell extends Rectangle {
 		this.setFill(colorPicker.getValue());
 	}
 
+	/**
+     * Assigns colours depending on the amount of neighbours a cell has 
+     * e.g., 1 neighbour = yellow, 2 neighbours = orange, 
+     * and so on up to the maximum number of 8 neighbours).
+     */	
 	public void colourRuleNeighbours() {
 		int neighbours = this.game.getNumNeighbours(this.getTranslateX(),this.getTranslateY());
 		//System.out.println(getTranslateX() + " " + getTranslateY() + " "  + lifespan + " " + neighbours);
@@ -112,6 +123,11 @@ public class Cell extends Rectangle {
 		}
 	}
 
+	/**
+     * Assigns cells a random placement of colours. The only colours that 
+     * colorRuleRandom() does not allow are black and white,
+     * as these are the background colours.
+     */	
 	public void colourRuleRandom(){
 
 		double red = Math.random();
