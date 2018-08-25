@@ -93,7 +93,7 @@ public class GameOfLifeUI extends Application {
 	private Button toggleBackGroundButton = new Button();//toggles the background between black and white
 
 	//rotation button and image fields
-	private Button rotateButton = new Button("0Â°");
+	private Button rotateButton = new Button("0°");
 
 	// String for toggling between background white and background black
 	private String backgroundColour = "WHITE"; 
@@ -116,6 +116,7 @@ public class GameOfLifeUI extends Application {
 	private Label speedLabel = new Label("speed");	
 	private Label patternLabel = new Label("patterns");	
 	private Label colorLabel = new Label("colour rules");	
+	private Label rotateLabel = new Label("rotate");
 	HBox colorLabelBox = new HBox(5,colorLabel);
 
 	private ComboBox<String> patternBox = new ComboBox<String>();
@@ -192,7 +193,6 @@ public class GameOfLifeUI extends Application {
 		toggleBackGroundButton.setOnAction(this::doBlackAndWhite);
 		
 		//rotate button
-		Label rotateLabel = new Label("rotate");
 		rotateButton.setOnAction(this::toggleRotation);
 		rotateButton.setMinWidth(50);
 		VBox rotateBox = new VBox(rotateLabel, rotateButton);
@@ -416,6 +416,7 @@ public class GameOfLifeUI extends Application {
 			speedLabel.setTextFill(Color.WHITE);
 			patternLabel.setTextFill(Color.WHITE);
 			colorLabel.setTextFill(Color.WHITE);
+			rotateLabel.setTextFill(Color.WHITE);
 		} else {
 			backgroundColour = "WHITE";
 			layout.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
@@ -424,6 +425,7 @@ public class GameOfLifeUI extends Application {
 			speedLabel.setTextFill(Color.BLACK);
 			patternLabel.setTextFill(Color.BLACK);
 			colorLabel.setTextFill(Color.BLACK);
+			rotateLabel.setTextFill(Color.BLACK);
 		}
 	}	
 
@@ -439,7 +441,7 @@ public class GameOfLifeUI extends Application {
 	
 	public void toggleRotation(ActionEvent act) {
 		patternRotation = (patternRotation + 90) % 360;
-		rotateButton.setText(patternRotation + "Â°");
+		rotateButton.setText(patternRotation + "°");
 	}
 
 	/**
