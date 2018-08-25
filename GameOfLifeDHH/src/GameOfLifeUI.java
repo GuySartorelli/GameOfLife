@@ -221,9 +221,7 @@ public class GameOfLifeUI extends Application {
 		optionsBox.setAlignment(Pos.CENTER_LEFT);
 		optionsBox.setSpacing(padding);
 		optionsBox.setPadding(new Insets(padding, padding, padding, padding));
-		optionsBox.getChildren().add(rotateBox);
-
-
+		
 		GridPane patternPane = new GridPane(); //patterns grid
 		optionsBox.setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
 		patternBox.setItems(FXCollections.observableArrayList(game.getPatternNames()));
@@ -287,8 +285,8 @@ public class GameOfLifeUI extends Application {
 		GridPane.setHalignment(speedLabel, HPos.CENTER);
 		GridPane.setHalignment(patternLabel, HPos.CENTER);
 		GridPane.setHalignment(colorLabel, HPos.CENTER);
-		optionsBox.getChildren().addAll(patternPane, colourPane, sliderPane, nextGenButton, restartButton, toggleBackGroundButton, playButton);
-
+		optionsBox.getChildren().addAll(patternPane, rotateBox, colourPane, sliderPane, nextGenButton, restartButton, toggleBackGroundButton, playButton);
+		
 		layout.setBottom(optionsBox);
 
 		displayBuffer.getChildren().addAll(game.getCurrentBuffer());
@@ -407,6 +405,9 @@ public class GameOfLifeUI extends Application {
 		}
 	}
 
+	/**
+	 * Method for user to toggle between a black background and a white background
+	 */			
 	private void doBlackAndWhite(ActionEvent act) {
 		if (backgroundColour.equals("WHITE")) {
 			backgroundColour = "BLACK";
@@ -428,7 +429,10 @@ public class GameOfLifeUI extends Application {
 			rotateLabel.setTextFill(Color.BLACK);
 		}
 	}	
-
+	
+	/**
+	 * Method to refresh the application on button
+	 */		
 	public void doRestart(ActionEvent act) {
 		timeline.pause();
 		playButton.setGraphic(playView);
@@ -439,6 +443,10 @@ public class GameOfLifeUI extends Application {
 		updateStats();
 	}
 	
+	
+	/**
+	 * Method to rotate the patterns
+	 */	
 	public void toggleRotation(ActionEvent act) {
 		patternRotation = (patternRotation + 90) % 360;
 		rotateButton.setText(patternRotation + "°");
