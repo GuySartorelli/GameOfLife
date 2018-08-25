@@ -308,7 +308,7 @@ public class GameOfLifeUI extends Application {
 	
 	/**
 	 * An attempt to fix the issue where cells going outside the scaleOffset's bounds causes translation issues
-	 * It now blinks away for a frame and back for a frame, which is an improvement.
+	 * Doesn't actually work - tinker with it later maybe.
 	 */
 	private void offsetByBoundsDelta() {
 		Bounds scaleBounds = scaleOffset.getBoundsInLocal();
@@ -337,7 +337,7 @@ public class GameOfLifeUI extends Application {
 		updateStats();
 		game.update();
 		refreshBuffer();
-		offsetByBoundsDelta();
+		//offsetByBoundsDelta();
 	}
 
 	public void setSpeed(ObservableValue<? extends Number> ov, Number oldVal, Number newVal) {
